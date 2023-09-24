@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:guardian_key/AddModal.dart';
 import 'package:guardian_key/CategoryContainer.dart';
 import 'package:guardian_key/constants.dart';

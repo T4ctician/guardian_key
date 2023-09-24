@@ -18,6 +18,13 @@ import "package:flutter/material.dart";
 
   const buttonBackground = Color.fromARGB(255, 55, 114, 255);
 
+const tPrimaryColor = Colors.white;
+const tSecondaryColor = Color(0xFF272727);
+const tAccentColor = Color(0xFF001BFF);
+
+const tWhiteColor = Colors.white;
+const tCardBgColor = Color(0xFFF7F5F1);
+
 
 // -- ON-BOARDING COLORS
 const tOnBoardingPage1Color = Colors.white;

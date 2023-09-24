@@ -20,26 +20,14 @@ const String tAppName = "Gurdian Key";
 const String tAppTagLine = "Protecting What Matters Most Your Digital Identity!";
 
 
-// -- On Boarding Text
-const String tOnBoardingTitle1 = "Build Awesome Apps";
-const String tOnBoardingTitle2 = "Learn from YouTube";
-const String tOnBoardingTitle3 = "Get Code & Resources";
-const String tOnBoardingSubTitle1 = "Let's start your journey with us on this amazing and easy platform.";
-const String tOnBoardingSubTitle2 = "Get Video Tutorials of each topic to learn things easily.";
-const String tOnBoardingSubTitle3 = "Save time by just copy pasting complete apps you learned from videos.";
-const String tOnBoardingCounter1 = "1/3";
-const String tOnBoardingCounter2 = "2/3";
-const String tOnBoardingCounter3 = "3/3";
-
-
 // -- Welcome Screen Text
-const String tWelcomeTitle = "Build Awesome Apps";
-const String tWelcomeSubTitle = "Let's put your creativity on the development highway.";
+const String tWelcomeTitle = "Save your Credentials";
+const String tWelcomeSubTitle = "Your digital fortress awaits. Whether you're here to regain access to your vault or embark on a journey to secure your digital world.";
 
 
 // -- Login Screen Text
 const String tLoginTitle = "Welcome Back,";
-const String tLoginSubTitle = "Make it work, make it right, make it fast.";
+const String tLoginSubTitle = "Your digital world is at your fingertips";
 const String tRememberMe = "Remember Me?";
 const String tDontHaveAnAccount = "Don't have an Account? ";
 
@@ -61,7 +49,7 @@ const String tForgetMailSubTitle = "Enter your registered E-Mail to receive OTP"
 
 
 // -- OTP Screen - Text
-const String tOtpTitle = "CO\nDE";
+const String tOtpTitle = "CODE";
 const String tOtpSubTitle = "Verification";
 const String tOtpMessage = "Enter the verification code sent at ";
 
