@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:guardian_key/src/features/authentication/screens/homepage.dart';
-//import 'package:guardian_key/src/features/authentication/screens/signup/signup_screen.dart';
 import '../../../constants/colors.dart';
 import '../../../constants/image_strings.dart';
 import '../../../constants/text_strings.dart';
 import '../../../constants/sizes.dart';
 import 'login.dart';
+import 'signup_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -52,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                       const SizedBox(width: 10.0),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => Get.to(() => const HomePage()),
+                          onPressed: () => Get.to(() => const SignUpScreen()),
                           child: Text(tSignup.toUpperCase()),
                         ),
                       ),

@@ -15,7 +15,7 @@ class AddModal extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Align(
@@ -24,19 +24,19 @@ class AddModal extends StatelessWidget {
               width: screenWidth * 0.4,
               height: 5,
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 156, 156, 156),
+                  color: const Color.fromARGB(255, 156, 156, 156),
                   borderRadius: BorderRadius.circular(20)),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           searchText("Search for a website or app"),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           websiteContainer(context),
-          Padding(
+          const Padding(
             padding: EdgeInsets.fromLTRB(20, 25, 20, 25),
             child: Text(
               "www.twitter.com",
@@ -53,15 +53,15 @@ class AddModal extends StatelessWidget {
               formTextField("Enter Password", Icons.lock_outline)
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
-          Container(
+          SizedBox(
             height: screenHeight * 0.065,
             width: screenWidth * 0.7,
             child: ElevatedButton(
                 style: ButtonStyle(
-                    elevation: MaterialStatePropertyAll(5),
+                    elevation: const MaterialStatePropertyAll(5),
                     shadowColor:
                         MaterialStatePropertyAll(Constants.buttonBackground),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -74,12 +74,12 @@ class AddModal extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text(
+                child: const Text(
                   "Ok Done",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 )),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
         ],
@@ -93,7 +93,7 @@ class AddModal extends StatelessWidget {
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: const EdgeInsets.fromLTRB(
                   20, 5, 5, 5), // add padding to adjust icon
               child: Icon(
                 icon,
@@ -101,18 +101,18 @@ class AddModal extends StatelessWidget {
               ),
             ),
             filled: true,
-            contentPadding: EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(16),
             hintText: hintText,
             hintStyle: TextStyle(
                 color: Constants.searchGrey, fontWeight: FontWeight.w500),
-            fillColor: Color.fromARGB(247, 232, 235, 237),
+            fillColor: const Color.fromARGB(247, 232, 235, 237),
             border: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0,
                   style: BorderStyle.none,
                 ),
                 borderRadius: BorderRadius.circular(20))),
-        style: TextStyle(),
+        style: const TextStyle(),
       ),
     );
   }
@@ -124,7 +124,7 @@ class AddModal extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
         child: Text(
           text,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
         ),
       ),
     );
@@ -145,7 +145,7 @@ class AddModal extends StatelessWidget {
             heightFactor: 0.5,
             widthFactor: 0.5,
             child: Container(
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.add),
                   SizedBox(
@@ -164,7 +164,7 @@ class AddModal extends StatelessWidget {
           padding: const EdgeInsets.only(left: 10),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Container(
+            child: SizedBox(
               height: 60,
               width: screenWidth * 0.6,
               child: ListView.builder(
@@ -199,7 +199,7 @@ class AddModal extends StatelessWidget {
               // ),
               Text(
                 websiteString,
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               )
             ],
           ),
@@ -214,7 +214,7 @@ class AddModal extends StatelessWidget {
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: const EdgeInsets.fromLTRB(
                   20, 5, 5, 5), // add padding to adjust icon
               child: Icon(
                 Icons.search,
@@ -222,18 +222,18 @@ class AddModal extends StatelessWidget {
               ),
             ),
             filled: true,
-            contentPadding: EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(16),
             hintText: hintText,
             hintStyle: TextStyle(
                 color: Constants.searchGrey, fontWeight: FontWeight.w500),
-            fillColor: Color.fromARGB(247, 232, 235, 237),
+            fillColor: const Color.fromARGB(247, 232, 235, 237),
             border: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0,
                   style: BorderStyle.none,
                 ),
                 borderRadius: BorderRadius.circular(20))),
-        style: TextStyle(),
+        style: const TextStyle(),
       ),
     );
   }

@@ -24,25 +24,4 @@ class LoginController extends GetxController {
     }
   }
 
-  // Removed Google sign-in method
-  // Future<void> googleSignIn() async {
-  //   try {
-  //     isLoading.value = true;
-  //     await AuthenticationRepository.instance.signInWithGoogle();
-  //   } catch (e) {
-  //     isLoading.value = false;
-  //     Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));
-  //   }
-  // }
-
-  // Removed Facebook sign-in method
-  // Future<void> facebookSignIn() async {
-  //   try {
-  //     isLoading.value = true;
-  //     await AuthenticationRepository.instance.signInWithFacebook();
-  //   } catch (e) {
-  //     isLoading.value = false;
-  //     Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));
-  //   }
-  // }
 }

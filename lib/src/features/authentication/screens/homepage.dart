@@ -19,7 +19,7 @@ class HomePage  extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () => bottomModal(context),
           backgroundColor: Constants.fabBackground,
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
         bottomNavigationBar: BottomAppBar(
             shape: const CircularNotchedRectangle(),
@@ -31,7 +31,7 @@ class HomePage  extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SvgPicture.asset("assets/4square.svg"),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       SvgPicture.asset("assets/shield.svg")
@@ -42,23 +42,23 @@ class HomePage  extends StatelessWidget {
             child: Column(
               children: [
                 profilePicAndBellIcon(assetName, screenHeight),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 searchText("Search Website/App Password"),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 HeadingText("Category"),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 CategoryBoxes(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 HeadingText("Recently Used"),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Container(
@@ -97,7 +97,7 @@ class HomePage  extends StatelessWidget {
                   children: [
                     Text(
                       password.websiteName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 22, 22, 22),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -105,7 +105,7 @@ class HomePage  extends StatelessWidget {
                     ),
                     Text(
                       password.email,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 39, 39, 39),
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -145,7 +145,7 @@ class HomePage  extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(10.0, 10, 0, 0),
         child: Text(
           text,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -169,7 +169,7 @@ class HomePage  extends StatelessWidget {
   }
 
   Widget circleAvatarRound() {
-    return CircleAvatar(
+    return const CircleAvatar(
       radius: 28,
       backgroundColor: Color.fromARGB(255, 213, 213, 213),
       child: CircleAvatar(
@@ -196,8 +196,8 @@ class HomePage  extends StatelessWidget {
           Row(
             children: [
               circleAvatarRound(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 0, 8, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -235,7 +235,7 @@ class HomePage  extends StatelessWidget {
       child: TextFormField(
         decoration: InputDecoration(
             prefixIcon: Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: const EdgeInsets.fromLTRB(
                   20, 5, 5, 5), // add padding to adjust icon
               child: Icon(
                 Icons.search,
@@ -243,18 +243,18 @@ class HomePage  extends StatelessWidget {
               ),
             ),
             filled: true,
-            contentPadding: EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(16),
             hintText: hintText,
             hintStyle: TextStyle(
                 color: Constants.searchGrey, fontWeight: FontWeight.w500),
-            fillColor: Color.fromARGB(247, 232, 235, 237),
+            fillColor: const Color.fromARGB(247, 232, 235, 237),
             border: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   width: 0,
                   style: BorderStyle.none,
                 ),
                 borderRadius: BorderRadius.circular(20))),
-        style: TextStyle(),
+        style: const TextStyle(),
       ),
     );
   }
@@ -270,13 +270,13 @@ class HomePage  extends StatelessWidget {
           return Wrap(children: <Widget>[
             Container(
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors
                         .white, //forDialog ? Color(0xFF737373) : Colors.white,
-                    borderRadius: new BorderRadius.only(
-                        topLeft: const Radius.circular(25.0),
-                        topRight: const Radius.circular(25.0))),
-                child: AddModal(),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25.0),
+                        topRight: Radius.circular(25.0))),
+                child: const AddModal(),
               ),
             )
           ]);
@@ -290,7 +290,7 @@ class HomePage  extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Align(
@@ -299,15 +299,15 @@ class HomePage  extends StatelessWidget {
               width: screenWidth * 0.4,
               height: 5,
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 156, 156, 156),
+                  color: const Color.fromARGB(255, 156, 156, 156),
                   borderRadius: BorderRadius.circular(20)),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           searchText("Search for a website or app"),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Row(
@@ -322,7 +322,7 @@ class HomePage  extends StatelessWidget {
                   heightFactor: 0.5,
                   widthFactor: 0.5,
                   child: Container(
-                    child: Row(
+                    child: const Row(
                       children: [
                         Icon(Icons.add),
                         SizedBox(
