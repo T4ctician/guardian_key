@@ -37,8 +37,9 @@ class LoginFormWidget extends StatelessWidget {
                 decoration: const InputDecoration(prefixIcon: Icon(LineAwesomeIcons.user), labelText: tEmail, hintText: tEmail),
               ),
               const SizedBox(height: tFormHeight - 20),
-              TextFormField(
-                obscureText: true,
+            Obx(
+                () => TextFormField(
+                  obscureText: controller.obscureText.value, // This is reactive now// use RxBool to determine whether the text should be obscured or not
                 controller: controller.password,
                 validator: (value) {
                   if (value == '' || value == null) {
@@ -47,12 +48,21 @@ class LoginFormWidget extends StatelessWidget {
                     return null;
                   }
                 },
-                decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.fingerprint),
-                    labelText: tPassword,
-                    hintText: tPassword,
-                    suffixIcon: Icon(LineAwesomeIcons.eye_slash)),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.fingerprint),
+                  labelText: tPassword,
+                  hintText: tPassword,
+                  suffixIcon: IconButton( // Changed to IconButton to add functionality
+                    icon: Obx(() => 
+                      Icon(controller.obscureText.value // Choose the icon based on the obscureText value
+                        ? LineAwesomeIcons.eye_slash 
+                        : LineAwesomeIcons.eye)
+                    ),
+                    onPressed: () => controller.togglePasswordVisibility(), // Toggle password visibility when tapped
+                  ),
+                ),
               ),
+            ),
               const SizedBox(height: tFormHeight - 20),
 
               /// -- LOGIN BTN

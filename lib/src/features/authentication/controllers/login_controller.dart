@@ -10,8 +10,16 @@ class LoginController extends GetxController {
   final email = TextEditingController();
   final password = TextEditingController();
 
+  var obscureText = true.obs; // Password will be obscured initially.
+
   /// Loader
   final isLoading = false.obs;
+
+  // Function to toggle the visibility
+  void togglePasswordVisibility() {
+    obscureText.value = !obscureText.value;
+    print('Password Visibility toggled to: ${obscureText.value}'); // Add this line
+  }
 
   /// Call this Function from Design & it will perform the LOGIN Op.
   Future<void> loginUser(String email, String password) async {
