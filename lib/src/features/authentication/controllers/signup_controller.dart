@@ -16,7 +16,7 @@ class SignUpController extends GetxController {
   final password = TextEditingController();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
-  final dateOfBirth = TextEditingController();
+  final dateOfBirth = TextEditingController(); // Instead of ''.obs
   final gender = ''.obs;
   final phoneNo = TextEditingController();
 
@@ -24,6 +24,10 @@ class SignUpController extends GetxController {
   final isLoading = false.obs;
 
   final termsAccepted = false.obs; // This will handle the state of the checkbox.
+
+  // Define a getter for registrationSuccessful
+  RxBool _registrationSuccessful = false.obs;
+  bool get registrationSuccessful => _registrationSuccessful.value;
 
  Future<void> createUser() async {
     try {
@@ -64,6 +68,18 @@ class SignUpController extends GetxController {
     }
   }
 
+  // Add onClose() method here:
+  @override
+  void onClose() {
+    // Dispose of the TextEditingController when the controller is closed.
+    email.dispose();
+    password.dispose();
+    firstName.dispose();
+    lastName.dispose();
+    dateOfBirth.dispose(); // dispose dateOfBirth TextEditingController here
+    phoneNo.dispose();
+    super.onClose(); // call super to ensure proper cleanup
+  }
 
 }
 

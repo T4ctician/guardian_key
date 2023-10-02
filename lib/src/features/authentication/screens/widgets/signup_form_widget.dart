@@ -46,11 +46,26 @@ class SignUpFormWidget extends StatelessWidget {
             ),
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
-              controller: controller.dateOfBirth,
+              controller: controller.dateOfBirth, // Use TextEditingController for TextField
+              readOnly: true, // Make it read-only so user cannot type but only select date using DatePicker
               decoration: const InputDecoration(
                   label: Text(tDateOfBirth),
                   prefixIcon: Icon(LineAwesomeIcons.calendar)),
+              onTap: () async {
+                final DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                );
+                if (pickedDate != null) {
+                  final String formattedDate = "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                  controller.dateOfBirth.text = formattedDate; // Assign formatted date to the Controller
+                }
+              },
             ),
+
+
             const SizedBox(height: tFormHeight - 20),
             DropdownButtonFormField(
               items: ['Male', 'Female', 'Other']
