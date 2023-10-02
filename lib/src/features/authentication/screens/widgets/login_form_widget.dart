@@ -42,8 +42,8 @@ class LoginFormWidget extends StatelessWidget {
                   obscureText: controller.obscureText.value, // This is reactive now// use RxBool to determine whether the text should be obscured or not
                 controller: controller.password,
                 validator: (value) {
-                  if (value == '' || value == null) {
-                    return "Please enter your Password";
+                  if (value == null || value.isEmpty) {
+                    return "Enter your Password";
                   } else {
                     return null;
                   }
