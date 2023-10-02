@@ -80,6 +80,63 @@ class SignUpFormWidget extends StatelessWidget {
                   prefixIcon: Icon(LineAwesomeIcons.venus_mars)),
             ),
             const SizedBox(height: tFormHeight - 20),
+            Obx(
+              () => TextFormField(
+                controller: controller.password,
+                obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
+                decoration: InputDecoration(
+                    label: Text('Password'),
+                    prefixIcon: Icon(LineAwesomeIcons.key),
+                    suffixIcon: IconButton(
+                      onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
+                      icon: Icon(controller.obscureText.value
+                          ? LineAwesomeIcons.eye
+                          : LineAwesomeIcons.eye_slash),
+                    )),
+                validator: (value) {
+                  // Put your password validation logic here
+                  if (value == null || value.isEmpty) {
+                    return "Enter Password";
+                  } else if (value.length < 8) {
+                    return "Use 8 or more characters";
+                  } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                    return "Use at least one uppercase letter";
+                  } else if (!RegExp(r'[a-z]').hasMatch(value)) {
+                    return "Use at least one lowercase letter";
+                  } else if (!RegExp(r'[0-9]').hasMatch(value)) {
+                    return "Use at least one number";
+                  } else if (!RegExp(r'[!@#$&]').hasMatch(value)) {
+                    return r"Use one special char !@#$&";
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: tFormHeight - 20),
+            Obx(
+              () => TextFormField(
+                controller: controller.confirmPassword,
+                obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
+                decoration: InputDecoration(
+                    label: Text('Confirm Password'),
+                    prefixIcon: Icon(LineAwesomeIcons.key),
+                    suffixIcon: IconButton(
+                      onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
+                      icon: Icon(controller.obscureText.value
+                          ? LineAwesomeIcons.eye
+                          : LineAwesomeIcons.eye_slash),
+                    )),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Confirm Password';
+                  } else if (value != controller.password.text) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: tFormHeight - 20),
             CheckboxListTile(
               title: RichText(
                 text: TextSpan(

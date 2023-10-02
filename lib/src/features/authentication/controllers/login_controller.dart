@@ -18,7 +18,6 @@ class LoginController extends GetxController {
   // Function to toggle the visibility
   void togglePasswordVisibility() {
     obscureText.value = !obscureText.value;
-    print('Password Visibility toggled to: ${obscureText.value}'); // Add this line
   }
 
   /// Call this Function from Design & it will perform the LOGIN Op.

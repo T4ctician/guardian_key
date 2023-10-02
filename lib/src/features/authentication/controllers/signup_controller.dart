@@ -7,6 +7,9 @@ import 'package:guardian_key/src/features/authentication/models/user_model.dart'
 class SignUpController extends GetxController {
   static SignUpController get instance => Get.find();
 
+  final obscureText = true.obs;
+  void togglePasswordVisibility() => obscureText.value = !obscureText.value;
+
 
   //final userRepo = UserRepository.instance; //Call Get.put(UserRepo) if not define in AppBinding file (main.dart)
    final userRepo = MockUserRepository(); // Use a mock instance while testing
@@ -14,11 +17,11 @@ class SignUpController extends GetxController {
   // TextField Controllers to get data from TextFields
   final email = TextEditingController();
   final password = TextEditingController();
+  final confirmPassword = TextEditingController();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final dateOfBirth = TextEditingController(); // Instead of ''.obs
   final gender = ''.obs;
-  final phoneNo = TextEditingController();
 
   /// Loader
   final isLoading = false.obs;
@@ -77,7 +80,8 @@ class SignUpController extends GetxController {
     firstName.dispose();
     lastName.dispose();
     dateOfBirth.dispose(); // dispose dateOfBirth TextEditingController here
-    phoneNo.dispose();
+    password.dispose();
+    confirmPassword.dispose();
     super.onClose(); // call super to ensure proper cleanup
   }
 
