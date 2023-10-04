@@ -16,8 +16,8 @@ class CategoryBox extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      height: screenHeight * 0.15,
-      width: screenWidth * 0.26,
+      height: screenHeight * 0.10,
+      width: screenWidth * 0.40,
       decoration: BoxDecoration(
           color: outerColor, borderRadius: BorderRadius.circular(20)),
       child: FractionallySizedBox(
@@ -26,8 +26,8 @@ class CategoryBox extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(color: innerColor, shape: BoxShape.circle),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SvgPicture.asset(height: 10, logoAsset),
+            padding: const EdgeInsets.all(5.0),
+            child: SvgPicture.asset(height: 50, logoAsset),
           ),
         ),
       ),

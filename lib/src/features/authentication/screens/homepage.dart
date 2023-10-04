@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardian_key/AddModal.dart';
-import 'package:guardian_key/CategoryContainer.dart';
-import 'package:guardian_key/constants.dart';
+import 'package:guardian_key/src/constants/CategoryContainer.dart';
+import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/model/password_model.dart';
 
 class HomePage  extends StatelessWidget {
   const HomePage ({super.key});
 
-  @override
+@override
   Widget build(BuildContext context) {
-    const String assetName = 'assets/bell.svg';
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -21,27 +20,12 @@ class HomePage  extends StatelessWidget {
           backgroundColor: Constants.fabBackground,
           child: const Icon(Icons.add),
         ),
-        bottomNavigationBar: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 10,
-            child: SizedBox(
-                height: 60,
-                child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SvgPicture.asset("assets/4square.svg"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      SvgPicture.asset("assets/shield.svg")
-                    ]))),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
             child: Column(
               children: [
-                profilePicAndBellIcon(assetName, screenHeight),
+                profilePic(screenHeight),
                 const SizedBox(
                   height: 20,
                 ),
@@ -62,7 +46,6 @@ class HomePage  extends StatelessWidget {
                   height: 10,
                 ),
                 Container(
-                  // height: 200,
                   child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: Constants.passwordData.length,
@@ -78,6 +61,7 @@ class HomePage  extends StatelessWidget {
       ),
     );
   }
+
 
   Widget PasswordTile(passwords password, BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -151,22 +135,50 @@ class HomePage  extends StatelessWidget {
     );
   }
 
-  Widget CategoryBoxes() {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      CategoryBox(
-          outerColor: Constants.lightBlue,
-          innerColor: Constants.darkBlue,
-          logoAsset: "assets/codesandbox.svg"),
-      CategoryBox(
-          outerColor: Constants.lightGreen,
-          innerColor: Constants.darkGreen,
-          logoAsset: "assets/compass.svg"),
-      CategoryBox(
-          outerColor: Constants.lightRed,
-          innerColor: Constants.darkRed,
-          logoAsset: "assets/credit-card.svg")
-    ]);
-  }
+Widget CategoryBoxes() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      Column(
+        children: [
+          CategoryBox(
+            outerColor: Constants.lightBlue,
+            innerColor: Constants.darkBlue,
+            logoAsset: "assets/codesandbox.svg",
+          ),
+          SizedBox(height: 2.0),  // spacing between the box and the text
+          Text(
+            "Login",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black, // or any desired color
+            ),
+          ),
+        ],
+      ),
+      Column(
+        children: [
+          CategoryBox(
+            outerColor: Constants.lightGreen,
+            innerColor: Constants.darkGreen,
+            logoAsset: "assets/compass.svg",
+          ),
+          SizedBox(height: 2.0),
+          Text(
+            "Note",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black, 
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
 
   Widget circleAvatarRound() {
     return const CircleAvatar(
@@ -186,44 +198,36 @@ class HomePage  extends StatelessWidget {
     );
   }
 
-  Widget profilePicAndBellIcon(String assetName, double screenHeight) {
+Widget profilePic(double screenHeight) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10.0, 35, 20.0, 5),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // profile row
-          Row(
-            children: [
-              circleAvatarRound(),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello, Kenny",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 22, 22, 22),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "Good morning",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 39, 39, 39),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
+          circleAvatarRound(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Hello, Kenny",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 22, 22, 22),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              )
-            ],
+                Text(
+                  "Good morning",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 39, 39, 39),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SvgPicture.asset(assetName,
-              semanticsLabel: 'bell icon ', height: screenHeight * 0.035),
         ],
       ),
     );

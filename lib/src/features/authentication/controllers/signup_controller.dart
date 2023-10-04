@@ -80,7 +80,6 @@ class SignUpController extends GetxController {
     firstName.dispose();
     lastName.dispose();
     dateOfBirth.dispose(); // dispose dateOfBirth TextEditingController here
-    password.dispose();
     confirmPassword.dispose();
     super.onClose(); // call super to ensure proper cleanup
   }

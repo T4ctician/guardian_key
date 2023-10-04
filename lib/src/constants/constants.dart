@@ -28,6 +28,10 @@ class Constants {
         "https://img.freepik.com/free-icon/twitter_318-674515.jpg"),
     passwords("Dribbble Pro", "rahulornob@gmail.com",
         "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
+    passwords("Dribbble Pro", "rahulornob@gmail.com",
+        "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
+    passwords("Dribbble Pro", "rahulornob@gmail.com",
+        "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
   ];
 
   static List<String> websiteList = ["twitter", "facebook", "Instagram"];

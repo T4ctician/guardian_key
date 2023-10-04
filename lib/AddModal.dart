@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'constants.dart';
+import 'src/constants/constants.dart';
 
 class AddModal extends StatelessWidget {
   const AddModal({super.key});
