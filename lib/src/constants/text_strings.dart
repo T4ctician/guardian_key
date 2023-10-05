@@ -56,16 +56,16 @@ const String tOtpSubTitle = "Verification";
 const String tOtpMessage = "Enter the verification code sent at ";
 
 
-// -- Dashboard Screen - Text
-const String tDashboardTitle = "Hey, Coding with T";
-const String tDashboardHeading = "Explore Courses";
-const String tDashboardSearch = "Search...";
+// -- Homepage - Text
+const String tSearchbox = "Search Website/App Password";
+const String tCategory = "Category";
+const String tNote = "Notes";
+const String tHomePageSearch = "Search...";
 const String tDashboardBannerTitle2 = "JAVA";
 const String tDashboardButton = "View All";
 const String tDashboardTopCourses = "Top Courses";
 const String tDashboardBannerSubTitle = "10 Lessons";
 const String tDashboardBannerTitle1 = "Android for Beginners";
-
 
 
 // -- Profile Screen - Text

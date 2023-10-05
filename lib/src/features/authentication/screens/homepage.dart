@@ -4,9 +4,12 @@ import 'package:guardian_key/AddModal.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/model/password_model.dart';
+import 'package:guardian_key/src/constants/image_strings.dart';
+import 'package:guardian_key/src/constants/text_strings.dart';
 
 class HomePage  extends StatelessWidget {
   const HomePage ({super.key});
+  
 
 @override
   Widget build(BuildContext context) {
@@ -29,11 +32,11 @@ class HomePage  extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                searchText("Search Website/App Password"),
+                searchText(tSearchbox),
                 const SizedBox(
                   height: 10,
                 ),
-                HeadingText("Category"),
+                HeadingText(tCategory),
                 const SizedBox(
                   height: 10,
                 ),
@@ -233,6 +236,8 @@ Widget profilePic(double screenHeight) {
     );
   }
 
+
+
   Widget searchText(String hintText) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -310,7 +315,7 @@ Widget profilePic(double screenHeight) {
           const SizedBox(
             height: 20,
           ),
-          searchText("Search for a website or app"),
+          searchText(tSearchbox),
           const SizedBox(
             height: 10,
           ),

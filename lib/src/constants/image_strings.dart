@@ -13,13 +13,11 @@ const String tWelcomeScreenImage = "assets/welcome/welcome.png";
 const String tForgetPasswordImage = "assets/images/forget_password/forget-password.png";
 
 
-// -- Dashboard Images
-const String tUserProfileImage = "assets/images/dashboard/dash-person.png";
-const String tBookmarkIcon = "assets/images/dashboard/bookmark-icon.png";
-const String tBannerImage1 = "assets/images/dashboard/dash-01.png";
-const String tBannerImage2 = "assets/images/dashboard/dash-02.png";
-const String tTopCourseImage1 = "assets/images/dashboard/dash-03.png";
-const String tTopCourseImage2 = "assets/images/dashboard/dash-04.png";
+// -- Homepage Images
+const String tLoginImage = "assets/HomePage/codesandbox.svg";
+const String tnoteImage = "assets/HomePage/compass.svg";
+const String tMaleAvatar = "assets/profile/male_avatar.jpg";
+const String tFemaleAvatar = "assets/profile/female_avatar.jpg";
 
 // -- Profile Images
 const String tProfileImage = "assets/images/profile/profile-pic.png";
