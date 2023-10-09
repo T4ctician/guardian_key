@@ -40,6 +40,8 @@ dependencies:
   flutter_native_splash: ^2.3.2
   get: ^4.6.6
   line_awesome_flutter: ^2.0.0
+  password_strength_checker: ^1.2.2
+  collection: ^1.15.0
 
 flutter_native_splash:
   color: "#ffffff"

@@ -3,40 +3,46 @@ import 'dart:convert';
 
 class passwords {
   final String websiteName;
+  final String userID; 
   final String email;
-  final String logoUrl;
+  final String password; 
 
-  passwords(
-    this.websiteName,
-    this.email,
-    this.logoUrl,
-  );
+  passwords({
+    required this.websiteName,
+    required this.userID,
+    required this.email,
+    required this.password,
+  });
 
   passwords copyWith({
     String? websiteName,
+    String? userID,
     String? email,
-    String? logoUrl,
+    String? password,
   }) {
     return passwords(
-      websiteName ?? this.websiteName,
-      email ?? this.email,
-      logoUrl ?? this.logoUrl,
+      websiteName: websiteName ?? this.websiteName,
+      userID: userID ?? this.userID,
+      email: email ?? this.email,
+      password: password ?? this.password,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'websiteName': websiteName,
+      'userID': userID,
       'email': email,
-      'logoUrl': logoUrl,
+      'password': password,
     };
   }
 
   factory passwords.fromMap(Map<String, dynamic> map) {
     return passwords(
-      map['websiteName'] as String,
-      map['email'] as String,
-      map['logoUrl'] as String,
+      websiteName: map['websiteName'] as String,
+      userID: map['userID'] as String,
+      email: map['email'] as String,
+      password: map['password'] as String,
     );
   }
 
@@ -45,7 +51,9 @@ class passwords {
   factory passwords.fromJson(String source) => passwords.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'passwords(websiteName: $websiteName, email: $email, logoUrl: $logoUrl)';
+  String toString() {
+    return 'passwords(websiteName: $websiteName, userID: $userID, email: $email, password: $password)';
+  }
 
   @override
   bool operator ==(covariant passwords other) {
@@ -53,10 +61,11 @@ class passwords {
   
     return 
       other.websiteName == websiteName &&
+      other.userID == userID &&
       other.email == email &&
-      other.logoUrl == logoUrl;
+      other.password == password;
   }
 
   @override
-  int get hashCode => websiteName.hashCode ^ email.hashCode ^ logoUrl.hashCode;
+  int get hashCode => websiteName.hashCode ^ userID.hashCode ^ email.hashCode ^ password.hashCode;
 }

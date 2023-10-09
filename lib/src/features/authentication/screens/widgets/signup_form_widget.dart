@@ -70,8 +70,8 @@ class SignUpFormWidget extends StatelessWidget {
             DropdownButtonFormField(
               items: ['Male', 'Female', 'Other']
                   .map((label) => DropdownMenuItem(
-                        child: Text(label),
                         value: label,
+                        child: Text(label),
                       ))
                   .toList(),
               onChanged: (value) => controller.gender.value = value.toString(),
@@ -85,8 +85,8 @@ class SignUpFormWidget extends StatelessWidget {
                 controller: controller.password,
                 obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
                 decoration: InputDecoration(
-                    label: Text('Password'),
-                    prefixIcon: Icon(LineAwesomeIcons.key),
+                    label: const Text('Password'),
+                    prefixIcon: const Icon(LineAwesomeIcons.key),
                     suffixIcon: IconButton(
                       onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
                       icon: Icon(controller.obscureText.value
@@ -118,8 +118,8 @@ class SignUpFormWidget extends StatelessWidget {
                 controller: controller.confirmPassword,
                 obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
                 decoration: InputDecoration(
-                    label: Text('Confirm Password'),
-                    prefixIcon: Icon(LineAwesomeIcons.key),
+                    label: const Text('Confirm Password'),
+                    prefixIcon: const Icon(LineAwesomeIcons.key),
                     suffixIcon: IconButton(
                       onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
                       icon: Icon(controller.obscureText.value
@@ -142,10 +142,10 @@ class SignUpFormWidget extends StatelessWidget {
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style, // this is the default text style
                   children: <TextSpan>[
-                    TextSpan(text: 'I accept the '),
+                    const TextSpan(text: 'I accept the '),
                     TextSpan(
                       text: 'Terms and Conditions',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.blue, // Text color for Terms and Conditions
                         decoration: TextDecoration.underline, // Underline decoration
                       ),
@@ -155,8 +155,8 @@ class SignUpFormWidget extends StatelessWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Terms and Conditions'),
-                                content: SingleChildScrollView(
+                                title: const Text('Terms and Conditions'),
+                                content: const SingleChildScrollView(
                                   child: Text(termsandcondition),
                                 ),
                                 actions: <Widget>[
@@ -164,7 +164,7 @@ class SignUpFormWidget extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: Text('Close'),
+                                    child: const Text('Close'),
                                   ),
                                 ],
                               );
@@ -199,9 +199,9 @@ class SignUpFormWidget extends StatelessWidget {
                   }
                       : null,
                   child: controller.isLoading.value
-                      ? Row(
+                      ? const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             SizedBox(
                               width: 20,
                               height: 20,

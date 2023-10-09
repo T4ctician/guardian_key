@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:guardian_key/src/features/authentication/screens/homepage.dart'; // Import the homepage.dart file
 import 'package:get/get.dart';
-import 'package:guardian_key/src/features/authentication/screens/welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());

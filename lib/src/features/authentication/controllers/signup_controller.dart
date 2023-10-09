@@ -29,7 +29,7 @@ class SignUpController extends GetxController {
   final termsAccepted = false.obs; // This will handle the state of the checkbox.
 
   // Define a getter for registrationSuccessful
-  RxBool _registrationSuccessful = false.obs;
+  final RxBool _registrationSuccessful = false.obs;
   bool get registrationSuccessful => _registrationSuccessful.value;
 
  Future<void> createUser() async {

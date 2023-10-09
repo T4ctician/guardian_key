@@ -20,19 +20,20 @@ class Constants {
   static Color buttonBackground = const Color.fromARGB(255, 55, 114, 255);
 
   static List<passwords> passwordData = [
-    passwords("Google Account", "rahulornob@gmail.com",
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/2008px-Google_%22G%22_Logo.svg.png"),
-    passwords("Netflix Personal", "rahulornob@gmail.com",
-        "https://pngimg.com/uploads/netflix/netflix_PNG15.png"),
-    passwords("Twitter", "rahulornob",
-        "https://img.freepik.com/free-icon/twitter_318-674515.jpg"),
-    passwords("Dribbble Pro", "rahulornob@gmail.com",
-        "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
-    passwords("Dribbble Pro", "rahulornob@gmail.com",
-        "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
-    passwords("Dribbble Pro", "rahulornob@gmail.com",
-        "https://cdn.freebiesupply.com/logos/large/2x/dribbble-icon-1-logo-png-transparent.png"),
+    passwords(
+      websiteName: "www.google.com", 
+      userID: "hulornob",
+      email: "hulornob@gmail.com",
+      password: "asdsad123"
+    ),
+      passwords(
+      websiteName: "www.facebook.com", 
+      userID: "noob",
+      email: "noob@gmail.com",
+      password: "a123d123"
+    )
   ];
 
-  static List<String> websiteList = ["twitter", "facebook", "Instagram"];
+static List<String> websiteList = passwordData.map((p) => p.websiteName).toList();
+
 }
