@@ -71,6 +71,7 @@ const String tDashboardBannerTitle1 = "Android for Beginners";
 // -- Profile Screen - Text
 const String tProfile = "Profile";
 const String tEditProfile = "Edit Profile";
+const String tSaveProfile = "Save Profile";
 const String tLogoutDialogHeading = "Logout";
 const String tProfileHeading = "Coding with T";
 const String tProfileSubHeading = "superAdmin@codingwitht.com";

@@ -4,8 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardian_key/AddModal.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
-import 'package:guardian_key/model/password_model.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
+import 'package:guardian_key/src/features/authentication/models/user_model.dart';
+import 'package:guardian_key/src/features/authentication/models/login_model.dart';
+import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
+import 'package:guardian_key/src/features/authentication/screens/profile/profile_screen.dart';
+import 'package:guardian_key/src/services/login_service.dart'; 
 
 
 class HomePageWidget extends StatefulWidget {
@@ -16,37 +20,59 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class HomePageWidgetState extends State<HomePageWidget> {
-  List<passwords> displayedPasswords = List.from(Constants.passwordData);
+  List<LoginModel> displayedPasswords = [];
+
   final TextEditingController _searchController = TextEditingController();
+  UserModel? _currentUser;
+  final loginService = LoginService();
+
+
 
   @override
   void initState() {
     super.initState();
+    _fetchUserData();
     _searchController.addListener(_onSearchChanged);
   }
 
+    _fetchUserData() async {
+    final controller = ProfileController.instance;
+    final user = await controller.getUserData();
+    final passwordData = await loginService.fetchPasswordData();
+
+    setState(() {
+      _currentUser = user;
+      displayedPasswords = passwordData;  // Update the displayedPasswords list with the fetched data
+    });
+  }
+
+  Future<void> _refreshData() async {
+  try {
+    await _fetchUserData();  // This fetches and updates your data
+    setState(() {}); // This ensures the UI is refreshed
+  } catch (error) {
+    // Handle any errors here
+    print('Error refreshing data: $error');
+  }
+}
+
+
   void _onSearchChanged() {
     final input = _searchController.text;
-    List<passwords> matchingPasswords = [];
-    List<passwords> nonMatchingPasswords = [];
 
     if (input.isNotEmpty) {
-      for (var password in Constants.passwordData) {
-        if (password.websiteName.toLowerCase().contains(input.toLowerCase())) {
-          matchingPasswords.add(password);
-        } else {
-          nonMatchingPasswords.add(password);
-        }
-      }
+      final matchingPasswords = displayedPasswords.where((login) =>
+          login.websiteName.toLowerCase().contains(input.toLowerCase()));
+      final nonMatchingPasswords = displayedPasswords.where((password) =>
+          !password.websiteName.toLowerCase().contains(input.toLowerCase()));
       setState(() {
         displayedPasswords = [...matchingPasswords, ...nonMatchingPasswords];
       });
     } else {
-      setState(() {
-        displayedPasswords = List.from(Constants.passwordData);
-      });
+      _fetchUserData(); // Fetch data again when search is cleared
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,18 +102,22 @@ class HomePageWidgetState extends State<HomePageWidget> {
                 const SizedBox(height: 10),
                 HeadingText("Recently Used"),
                 const SizedBox(height: 10),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: displayedPasswords.length,
-                  itemBuilder: (context, index) {
-                    final password = displayedPasswords[index];
-                    return PasswordTile(
-                      password, 
-                      context, 
-                      highlight: index == 0 && _searchController.text.isNotEmpty
-                    );
-                  }
+                RefreshIndicator(
+                  onRefresh: _refreshData,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: displayedPasswords.length,
+                    itemBuilder: (context, index) {
+                      final password = displayedPasswords[index];
+                      return PasswordTile(
+                        password, 
+                        context, 
+                        highlight: index == 0 && _searchController.text.isNotEmpty
+                      );
+                    }
+                  ),
                 )
+
               ],
             ),
           ),
@@ -97,7 +127,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
   }
 
 
-  Widget PasswordTile(passwords passwordO, BuildContext context, {bool highlight = false}) {
+  Widget PasswordTile(LoginModel passwordO, BuildContext context, {bool highlight = false}){
     double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 10),
@@ -159,7 +189,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
     );
   }
 
-Widget EditIconButton(passwords password, BuildContext context) {
+Widget EditIconButton(LoginModel password, BuildContext context){
   return InkWell(
     onTap: () {
       bottomModal(context, passwordO: password);  // Pass the password object
@@ -246,18 +276,27 @@ Widget CategoryBoxes() {
   }
 
 Widget profilePic(double screenHeight) {
-    return Padding(
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context, 
+        MaterialPageRoute(builder: (context) => ProfileScreen()),
+      );
+    },
+    child: Padding(
       padding: const EdgeInsets.fromLTRB(10.0, 35, 20.0, 5),
       child: Row(
         children: [
           circleAvatarRound(),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello, Kenny",
+                  _currentUser == null 
+                    ? "Loading..." 
+                    : "Hello, ${_currentUser!.firstName} ${_currentUser!.lastName}",
                   style: TextStyle(
                     color: Color.fromARGB(255, 22, 22, 22),
                     fontSize: 17,
@@ -265,7 +304,7 @@ Widget profilePic(double screenHeight) {
                   ),
                 ),
                 Text(
-                  "Good morning",
+                  "Good ${greeting()}",
                   style: TextStyle(
                     color: Color.fromARGB(255, 39, 39, 39),
                     fontSize: 17,
@@ -277,9 +316,21 @@ Widget profilePic(double screenHeight) {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
+
+String greeting() {
+  var hour = DateTime.now().hour;
+  if (hour < 12) {
+    return 'Morning';
+  }
+  if (hour < 17) {
+    return 'Afternoon';
+  }
+  return 'Evening';
+}
 
 
 Widget searchText(String hintText) {
@@ -316,7 +367,7 @@ Widget searchText(String hintText) {
 
 
 
-Future<dynamic> bottomModal(BuildContext context, {passwords? passwordO}) {
+Future<dynamic> bottomModal(BuildContext context, {LoginModel? passwordO}){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),

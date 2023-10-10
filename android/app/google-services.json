@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "662072305081",
+    "project_id": "guardiankey-302",
+    "storage_bucket": "guardiankey-302.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662072305081:android:0fcfabfe645b9cd3838268",
+        "android_client_info": {
+          "package_name": "com.example.guardian_key"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHf6ryStN_lUHkTaOHVXHfpL3iyVTmuzk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

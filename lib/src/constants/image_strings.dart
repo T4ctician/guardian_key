@@ -20,4 +20,4 @@ const String tMaleAvatar = "assets/profile/male_avatar.jpg";
 const String tFemaleAvatar = "assets/profile/female_avatar.jpg";
 
 // -- Profile Images
-const String tProfileImage = "assets/images/profile/profile-pic.png";
+const String tProfileImage = "assets/profile/male_avatar.jpg";

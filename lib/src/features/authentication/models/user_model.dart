@@ -1,5 +1,4 @@
-// ignore: depend_on_referenced_packages
-//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
   final String? id;
@@ -29,21 +28,21 @@ class UserModel {
       "Email": email,
       "DateOfBirth": dateOfBirth,
       "Gender": gender,
-      // Storing password in Firebase is not a secure practice. You should use Firebase Auth to manage user passwords.
+      "Password": password
     };
   }
 
   /// Map Json oriented document snapshot from Firebase to UserModel
-  factory UserModel.fromSnapshot( document) { // remove DocumentSnapshot<Map<String, dynamic>> rmb to add back
+  factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document){
     final data = document.data()!;
     return UserModel(
       id: document.id,
-      email: data["Email"],
-      password: "", // Do not store or read passwords from Firestore. This should be managed by Firebase Auth.
       firstName: data["FirstName"],
       lastName: data["LastName"],
+      email: data["Email"],
       dateOfBirth: data["DateOfBirth"],
       gender: data["Gender"],
+      password: data["Password"], 
     );
   }
 }

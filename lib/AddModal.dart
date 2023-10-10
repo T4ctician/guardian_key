@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'src/constants/constants.dart';
-import 'package:guardian_key/model/password_model.dart';
-import 'package:guardian_key/model/random_password.dart';
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/models/password_model.dart';
+import 'package:guardian_key/src/features/authentication/models/random_password.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
+import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
+import 'package:guardian_key/src/features/authentication/controllers/addmodal_controller.dart';
+import 'package:guardian_key/src/services/login_service.dart';
 
 
 class AddModal extends StatefulWidget {
-  final passwords? passwordO;
+  final LoginModel? passwordO;
 
   const AddModal({Key? key, this.passwordO}) : super(key: key);
 
@@ -16,6 +20,8 @@ class AddModal extends StatefulWidget {
 
 class AddModalState extends State<AddModal> {
   String? selectedWebsite;
+  String? selectedLoginId;
+  final LoginService loginService = LoginService();
   TextEditingController websiteNameController = TextEditingController();
   TextEditingController userIDController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -26,6 +32,7 @@ class AddModalState extends State<AddModal> {
     super.initState();
     selectedWebsite = widget.passwordO?.websiteName;
     if (widget.passwordO != null) {
+      selectedLoginId = widget.passwordO!.id;
       websiteNameController.text = widget.passwordO!.websiteName ?? '';
       userIDController.text = widget.passwordO!.userID ?? '';
       emailController.text = widget.passwordO!.email ?? '';
@@ -64,7 +71,7 @@ class AddModalState extends State<AddModal> {
             const SizedBox(
               height: 20,
             ),
-            websiteContainer(context),
+            websiteContainer(context, loginService),
             Column(
               children: [
                 formHeading("Website / Application Name"),
@@ -81,55 +88,58 @@ class AddModalState extends State<AddModal> {
               height: 50,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-              children: [
-                // Ok Done Button
-                SizedBox(
-                  height: screenHeight * 0.065,
-                  width: screenWidth * 1.0 * 0.8,  // Increased the width
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(5),
-                      shadowColor: MaterialStateProperty.all(Constants.buttonBackground),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
-                          side: BorderSide(color: Constants.buttonBackground),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                    // Ok Done Button
+                    SizedBox(
+                        height: screenHeight * 0.065,
+                        width: screenWidth * 1.0 * 0.8,
+                        child: ElevatedButton(
+                            // ... other properties ...
+                            onPressed: () async {
+                                // Create a new LoginModel instance with the data from text fields
+                                LoginModel login = LoginModel(
+                                  id: widget.passwordO?.id, // Add this line
+                                  websiteName: websiteNameController.text.trim(),
+                                  userID: userIDController.text.trim(),
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                );
+
+                                // Check if login already exists
+                                LoginModel? existingLogin = await AddModalController.instance.getLoginByWebsiteName(login.websiteName);
+
+                                if (existingLogin == null) {
+                                    // Call the addLogin method to save the login
+                                    AddModalController.instance.addLogin(login);
+                                    Get.snackbar("Success", "Login added successfully!", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 3));
+                                } else {
+                                    // Call the updateLogin method to update the existing login
+                                    AddModalController.instance.updateLogin(login);
+                                    Get.snackbar("Success", "Login updated successfully!", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 3));
+                                }
+
+                                // Close the modal
+                                Navigator.pop(context);
+                            },
+                            child: const Text(
+                                "Ok Done",
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                            ),
                         ),
-                      ),
-                      backgroundColor: MaterialStateProperty.all(Constants.buttonBackground),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Ok Done",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
-                ),
                 // Red Circle Delete Button
                 Container(
                   height: screenHeight * 0.065,
-                  width: screenHeight * 0.065,  // Making width equal to height to ensure it's a circle
+                  width: screenHeight * 0.065,
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(5),
-                      backgroundColor: MaterialStateProperty.all(Colors.red),
-                      shape: MaterialStateProperty.all<CircleBorder>(
-                        CircleBorder(),
-                      ),
-                    ),
+                    // ... other properties ...
                     onPressed: () async {
                       bool? shouldDelete = await showConfirmationDialog(context);
                       if (shouldDelete == true) {
-                        // Clearing the values
-                        setState(() {
-                          websiteNameController.clear();
-                          userIDController.clear();
-                          emailController.clear();
-                          passwordController.clear();
-                        });
+                        // Delete the login based on the unique identifier
+                        AddModalController.instance.deleteLogin(selectedLoginId ?? ''); // using websiteName as a unique ID for now
+
                         // Close the modal
                         Navigator.of(context).pop();
                       }
@@ -220,21 +230,21 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
     );
   }
 
-Widget websiteContainer(BuildContext context) {
+Widget websiteContainer(BuildContext context, LoginService loginService) {
   double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
   return Row(
     children: [
-    GestureDetector(
-      onTap: () {
-        showAddModal(context);  // Open a new AddModal
-      },
+      GestureDetector(
+        onTap: () {
+          showAddModal(context);
+        },
         child: Container(
           height: 55,
           width: 120,
           decoration: BoxDecoration(
-              color: Constants.logoBackground,
-              borderRadius: BorderRadius.circular(20)),
+            color: Constants.logoBackground,
+            borderRadius: BorderRadius.circular(20)),
           child: FractionallySizedBox(
             heightFactor: 0.5,
             widthFactor: 0.5,
@@ -262,12 +272,29 @@ Widget websiteContainer(BuildContext context) {
           child: SizedBox(
             height: 60,
             width: screenWidth * 0.6,
-            child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: Constants.websiteList.length,
-                itemBuilder: (context, index) =>
-                    websiteBlock(Constants.websiteList[index], context)),
+            child: FutureBuilder<List<String>>(
+              // Replace Constants.websiteList with a call to LoginService method
+              future: loginService.fetchWebsiteList(), // Use fetchWebsiteList from loginService
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Loading indicator while fetching data
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  // Handle error
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // Data is available, build the website blocks
+                  List<String> websiteList = snapshot.data ?? [];
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: websiteList.length,
+                    itemBuilder: (context, index) =>
+                        websiteBlock(websiteList[index], context),
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -275,7 +302,7 @@ Widget websiteContainer(BuildContext context) {
   );
 }
 
-void showAddModal(BuildContext context, {passwords? passwordO}) {
+void showAddModal(BuildContext context, {LoginModel? passwordO}) {
   Navigator.of(context).pop();
   showModalBottomSheet(
     shape: RoundedRectangleBorder(
@@ -294,7 +321,7 @@ void showAddModal(BuildContext context, {passwords? passwordO}) {
                 topRight: Radius.circular(25.0),
               ),
             ),
-            child: AddModal(passwordO: passwordO),  // Pass the passwordO to AddModal
+            child: AddModal(passwordO: passwordO),
           ),
         )
       ]);
@@ -302,44 +329,57 @@ void showAddModal(BuildContext context, {passwords? passwordO}) {
   );
 }
 
-  Widget websiteBlock(String websiteString, BuildContext context) {
-    bool isSelected = websiteString == selectedWebsite;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedWebsite = websiteString;
-        });
-        passwords? selectedPassword;
-        try {
-          selectedPassword = Constants.passwordData.firstWhere(
-            (password) => password.websiteName.contains(websiteString)
-          );
-        } catch (e) {
-          selectedPassword = null;
-        }
 
-        if (selectedPassword != null) {
-          showAddModal(context, passwordO: selectedPassword);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(6.0, 3, 6, 3),
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 200),
-          height: 50,
-          decoration: BoxDecoration(
-              color: isSelected ? Colors.blue : Constants.logoBackground, 
-              borderRadius: BorderRadius.circular(20)),
-          child: Center(
-            child: Text(
-              websiteString,
-              style: TextStyle(fontSize: 14, color: isSelected ? Colors.white : Colors.black),
+  Widget websiteBlock(String websiteString, BuildContext context) {
+    return FutureBuilder<LoginModel?>(
+      // Replace Constants.passwordData with a call to LoginService method to get the selected password
+      future: loginService.getPasswordByWebsiteName(websiteString), // Adjust the method name according to your LoginService
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // Loading indicator while fetching data
+        return CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        // Handle error
+        return Text('Error: ${snapshot.error}');
+      } else {
+        final isSelected = websiteString == selectedWebsite;
+        final selectedPassword = snapshot.data;
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedWebsite = selectedPassword?.websiteName ?? 'DefaultWebsiteName';
+            });
+
+            if (selectedPassword != null) {
+              showAddModal(context, passwordO: selectedPassword);
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(6.0, 3, 6, 3),
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 200),
+              height: 50,
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.blue : Constants.logoBackground,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  websiteString,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
+        );
+      }
+    },
+  );
+}
+
 
   Future<bool?> showConfirmationDialog(BuildContext context) {
     return showDialog<bool>(

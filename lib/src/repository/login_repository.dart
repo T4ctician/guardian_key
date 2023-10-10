@@ -1,0 +1,106 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
+import 'package:guardian_key/src/repository/exceptions/t_exceptions.dart';
+
+class LoginRepository extends GetxController {
+  static LoginRepository get instance => Get.find();
+
+  final _db = FirebaseFirestore.instance;
+ 
+  // Get the user's UID dynamically
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
+
+
+  // Check if the user is logged in
+  String get checkUserId {
+    final uid = userId;
+    if (uid == null) throw Exception('No user logged in.');
+    return uid;
+  }
+
+  /// Store login data
+Future<void> createLogin(LoginModel login) async {
+    try {
+      await _db.collection("Users").doc(checkUserId).collection("Logins").add(login.toJson());
+    } catch (e) {
+      throw handleFirebaseErrors(e);
+    }
+  }
+  /// Fetch specific login details
+  Future<LoginModel> getLoginDetails(String email) async {
+    try {
+      final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("Email", isEqualTo: email).get();
+      if (snapshot.docs.isEmpty) throw 'No such login found';
+      return LoginModel.fromSnapshot(snapshot.docs.first);
+    } catch (e) {
+      throw handleFirebaseErrors(e);
+    }
+  }
+
+  /// Update Login details
+  Future<void> updateLoginRecord(LoginModel login) async {
+    try {
+      await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update(login.toJson());
+    } catch (e) {
+      throw handleFirebaseErrors(e);
+    }
+  }
+
+  /// Handle Firebase Errors
+  Exception handleFirebaseErrors(dynamic e) {
+    if (e is FirebaseAuthException) {
+      final result = TExceptions.fromCode(e.code);
+      return Exception(result.message);
+    } else if (e is FirebaseException) {
+      return Exception(e.message.toString());
+    } else {
+      return Exception(e.toString().isEmpty ? 'Something went wrong. Please Try Again' : e.toString());
+    }
+  }
+
+  /// Delete Login Data
+Future<void> deleteLogin(String id) async {
+  try {
+      await _db.collection("Users").doc(checkUserId).collection("Logins").doc(id).delete();
+  } on FirebaseAuthException catch (e) {
+    final result = TExceptions.fromCode(e.code);
+    throw result.message;
+  } on FirebaseException catch (e) {
+    throw e.message.toString();
+  } catch (_) {
+    throw 'Something went wrong. Please Try Again';
+  }
+}
+
+// Fetch a login by website name
+Future<LoginModel?> getLoginByWebsiteName(String websiteName) async {
+    try {
+      final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("WebsiteName", isEqualTo: websiteName).get();
+      if (snapshot.docs.isEmpty) return null;
+      return LoginModel.fromSnapshot(snapshot.docs.first);
+    } catch (e) {
+        throw e.toString();
+    }
+}
+
+  //
+    Future<List<LoginModel>> getAllLogins() async {
+        try {
+            final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").get();
+            return snapshot.docs.map((doc) => LoginModel.fromSnapshot(doc)).toList();
+        } catch (e) {
+            throw handleFirebaseErrors(e);
+        }
+    }
+
+  // Inside the LoginRepository class
+  Stream<List<LoginModel>> listenToAllLogins() {
+    return _db.collection("Users").doc(checkUserId).collection("Logins").snapshots().map((querySnapshot) {
+      return querySnapshot.docs.map((doc) => LoginModel.fromSnapshot(doc)).toList();
+    });
+}
+
+    
+}

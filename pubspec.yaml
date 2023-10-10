@@ -42,6 +42,9 @@ dependencies:
   line_awesome_flutter: ^2.0.0
   password_strength_checker: ^1.2.2
   collection: ^1.15.0
+  firebase_core: ^2.17.0
+  firebase_auth: ^4.10.1
+  cloud_firestore: ^4.9.3
 
 flutter_native_splash:
   color: "#ffffff"
@@ -77,6 +80,7 @@ flutter:
      - assets/splash_screen/
      - assets/onboarding_screen/
      - assets/welcome/
+     - assets/profile/male_avatar.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

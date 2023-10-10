@@ -5,11 +5,11 @@ String generatePassword({
   bool isNumber = true,
   bool isSpecial = true,
 }) {
-  final length = 8;
-  final letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
-  final letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  final number = '0123456789';
-  final special = '@#%^*>\$@?/[]=+';
+  const length = 8;
+  const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
+  const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const number = '0123456789';
+  const special = '@#%^*>\$@?/[]=+';
 
   String chars = "";
   if (letter) chars += '$letterLowerCase$letterUpperCase';

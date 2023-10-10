@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-//import '../../../repository/authentication_repository/authentication_repository.dart';
+import 'package:guardian_key/src/repository/authentication_repository.dart';
+import 'package:guardian_key/src/repository/user_repository.dart';
+
 
 class LoginController extends GetxController {
   static LoginController get instance => Get.find();
@@ -24,7 +26,7 @@ class LoginController extends GetxController {
   Future<void> loginUser(String email, String password) async {
     try {
       isLoading.value = true;
-      //await AuthenticationRepository.instance.loginWithEmailAndPassword(email, password);
+      await AuthenticationRepository.instance.loginWithEmailAndPassword(email, password);
     } catch (e) {
       isLoading.value = false;
       Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));

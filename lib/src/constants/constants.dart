@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:guardian_key/model/password_model.dart';
 
 class Constants {
   static Color searchGrey = const Color.fromARGB(255, 82, 101, 120);
@@ -18,22 +17,5 @@ class Constants {
   static Color fabBackground = const Color.fromARGB(255, 55, 114, 255);
 
   static Color buttonBackground = const Color.fromARGB(255, 55, 114, 255);
-
-  static List<passwords> passwordData = [
-    passwords(
-      websiteName: "www.google.com", 
-      userID: "hulornob",
-      email: "hulornob@gmail.com",
-      password: "asdsad123"
-    ),
-      passwords(
-      websiteName: "www.facebook.com", 
-      userID: "noob",
-      email: "noob@gmail.com",
-      password: "a123d123"
-    )
-  ];
-
-static List<String> websiteList = passwordData.map((p) => p.websiteName).toList();
 
 }

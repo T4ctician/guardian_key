@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
-//import 'package:guardian_key/src/repository/user_repository/user_repository.dart';
-//import '../../../repository/authentication_repository/authentication_repository.dart';
+import 'package:guardian_key/src/repository/user_repository.dart';
+import 'package:guardian_key/src/repository/authentication_repository.dart';
 
 class SignUpController extends GetxController {
   static SignUpController get instance => Get.find();
@@ -12,7 +12,7 @@ class SignUpController extends GetxController {
 
 
   //final userRepo = UserRepository.instance; //Call Get.put(UserRepo) if not define in AppBinding file (main.dart)
-   final userRepo = MockUserRepository(); // Use a mock instance while testing
+   final userRepo = UserRepository.instance; //Call Get.put(UserRepo) if not define in AppBinding file (main.dart)
 
   // TextField Controllers to get data from TextFields
   final email = TextEditingController();
@@ -32,7 +32,7 @@ class SignUpController extends GetxController {
   final RxBool _registrationSuccessful = false.obs;
   bool get registrationSuccessful => _registrationSuccessful.value;
 
- Future<void> createUser() async {
+Future<void> createUser() async {
     try {
       isLoading.value = true;
       
@@ -49,23 +49,18 @@ class SignUpController extends GetxController {
         gender: gender.value,
       );
       
-    /*  await userRepo.createUser(user); //Store Data in FireStore
-    } catch (e) {
-      isLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));
-    }*/
-          await userRepo.createUser(user); // Uses mock implementation
+      await userRepo.createUser(user); //Store Data in FireStore
+      // AuthenticationRepository.instance.firebaseUser.refresh();
     } catch (e) {
       isLoading.value = false;
       Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));
     }
 }
 
-
   /// [EmailAuthentication]
   Future<void> emailAuthentication(String email, String password) async {
     try {
-      //await AuthenticationRepository.instance.createUserWithEmailAndPassword(email, password);
+      await AuthenticationRepository.instance.createUserWithEmailAndPassword(email, password);
     } catch (e) {
       throw e.toString();
     }
@@ -84,12 +79,4 @@ class SignUpController extends GetxController {
     super.onClose(); // call super to ensure proper cleanup
   }
 
-}
-
-class MockUserRepository {
-  Future<void> createUser(UserModel user) async {
-    // For testing, just print to console. Replace with real implementation later.
-    // ignore: avoid_print
-    print('Mock: Creating user ${user.email}');
-  }
 }
