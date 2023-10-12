@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:guardian_key/AddModal.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
@@ -55,7 +56,6 @@ class HomePageWidgetState extends State<HomePageWidget> {
     print('Error refreshing data: $error');
   }
 }
-
 
   void _onSearchChanged() {
     final input = _searchController.text;
@@ -275,50 +275,58 @@ Widget CategoryBoxes() {
     );
   }
 
-Widget profilePic(double screenHeight) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context, 
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-    },
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(10.0, 35, 20.0, 5),
-      child: Row(
-        children: [
-          circleAvatarRound(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _currentUser == null 
-                    ? "Loading..." 
-                    : "Hello, ${_currentUser!.firstName} ${_currentUser!.lastName}",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 22, 22, 22),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+  Widget profilePic(double screenHeight) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10.0, 35, 20.0, 5),
+        child: Row(
+          children: [
+            circleAvatarRound(),
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _currentUser == null
+                        ? "Loading..."
+                        : "Hello, ${_currentUser!.firstName} ${_currentUser!.lastName}",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 22, 22, 22),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  "Good ${greeting()}",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 39, 39, 39),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    "Good ${greeting()}",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 39, 39, 39),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.refresh, color: Colors.black),
+                onPressed: _refreshData,
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
 
 
 String greeting() {
@@ -387,6 +395,9 @@ Future<dynamic> bottomModal(BuildContext context, {LoginModel? passwordO}){
               ),
             )
           ]);
+        }
+        ).then((Value){
+          _fetchUserData();
         });
   }
 

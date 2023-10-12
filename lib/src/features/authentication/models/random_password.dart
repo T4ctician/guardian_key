@@ -1,43 +1,43 @@
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
-String generatePassword({
-  bool letter = true,
-  bool isNumber = true,
-  bool isSpecial = true,
-}) {
-  const length = 8;
-  const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
-  const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const number = '0123456789';
-  const special = '@#%^*>\$@?/[]=+';
+const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
+const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const number = '0123456789';
+const special = '@#%^*>\$@?/[]=+';
 
-  String chars = "";
-  if (letter) chars += '$letterLowerCase$letterUpperCase';
-  if (isNumber) chars += '$number';
-  if (isSpecial) chars += '$special';
 
-  // Ensure one character from each category is added
+Future<String> generatePassword({
+  required int length,
+  required int numUpperCase,
+  required int numLowerCase,
+  required int numSpecialChars,
+}) async {
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int numUpperCase = prefs.getDouble('numUpperCase')?.toInt() ?? 1;
+  int numLowerCase = prefs.getDouble('numLowerCase')?.toInt() ?? 1;
+  int numSpecialChars = prefs.getDouble('numSpecialChars')?.toInt() ?? 1;
+
+  String chars = "$letterLowerCase$letterUpperCase$number$special";
+  
   String password = '';
-  if (letter) {
-    password += letterLowerCase[Random.secure().nextInt(letterLowerCase.length)];
+  for (int i = 0; i < numUpperCase; i++) {
     password += letterUpperCase[Random.secure().nextInt(letterUpperCase.length)];
   }
-  if (isNumber) {
-    password += number[Random.secure().nextInt(number.length)];
+  for (int i = 0; i < numLowerCase; i++) {
+    password += letterLowerCase[Random.secure().nextInt(letterLowerCase.length)];
   }
-  if (isSpecial) {
+  for (int i = 0; i < numSpecialChars; i++) {
     password += special[Random.secure().nextInt(special.length)];
   }
 
-  // Fill the rest of the length with random characters from the combined pool
   for (int i = password.length; i < length; i++) {
     password += chars[Random.secure().nextInt(chars.length)];
   }
 
-// Shuffle the characters to ensure randomness
-  List<String> passwordChars = password.split(''); // Split the password into individual characters
-  passwordChars.shuffle(); // Shuffle the characters
-  password = passwordChars.join(''); // Join the characters back into a string
+  List<String> passwordChars = password.split('');
+  passwordChars.shuffle();
+  password = passwordChars.join('');
   return password;
-
 }

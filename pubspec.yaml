@@ -45,6 +45,7 @@ dependencies:
   firebase_core: ^2.17.0
   firebase_auth: ^4.10.1
   cloud_firestore: ^4.9.3
+  shared_preferences: ^2.2.1
 
 flutter_native_splash:
   color: "#ffffff"
@@ -81,6 +82,7 @@ flutter:
      - assets/onboarding_screen/
      - assets/welcome/
      - assets/profile/male_avatar.jpg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

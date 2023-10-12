@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'src/constants/constants.dart';
 import 'package:get/get.dart';
-import 'package:guardian_key/src/features/authentication/models/password_model.dart';
 import 'package:guardian_key/src/features/authentication/models/random_password.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
 import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
@@ -21,6 +22,11 @@ class AddModal extends StatefulWidget {
 class AddModalState extends State<AddModal> {
   String? selectedWebsite;
   String? selectedLoginId;
+  int? passwordLength;
+  int? numUpperCase;
+  int? numLowerCase;
+  int? numSpecialChars;
+  String? userId;
   final LoginService loginService = LoginService();
   TextEditingController websiteNameController = TextEditingController();
   TextEditingController userIDController = TextEditingController();
@@ -38,7 +44,20 @@ class AddModalState extends State<AddModal> {
       emailController.text = widget.passwordO!.email ?? '';
       passwordController.text = widget.passwordO!.password ?? '';
     }
+    userId = FirebaseAuth.instance.currentUser?.uid;
+    _fetchPasswordSettings();
   }
+
+Future<void> _fetchPasswordSettings() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  setState(() {
+    passwordLength = (prefs.getDouble('${userId}_passwordLength') ?? 8.0).toInt();
+    numUpperCase = (prefs.getDouble('${userId}_numUpperCase') ?? 1.0).toInt();
+    numLowerCase = (prefs.getDouble('${userId}_numLowerCase') ?? 1.0).toInt();
+    numSpecialChars = (prefs.getDouble('${userId}_numSpecialChars') ?? 1.0).toInt();
+  });
+}
+
 
   @override
   void dispose() {
@@ -112,11 +131,9 @@ class AddModalState extends State<AddModal> {
                                 if (existingLogin == null) {
                                     // Call the addLogin method to save the login
                                     AddModalController.instance.addLogin(login);
-                                    Get.snackbar("Success", "Login added successfully!", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 3));
                                 } else {
                                     // Call the updateLogin method to update the existing login
                                     AddModalController.instance.updateLogin(login);
-                                    Get.snackbar("Success", "Login updated successfully!", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 3));
                                 }
 
                                 // Close the modal
@@ -197,17 +214,22 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
           style: const TextStyle(),
         ),
       ),
-      if (showGenerateButton) Padding(
-        padding: const EdgeInsets.only(right: 10.0, top: 5.0),
-        child: InkWell(
-          onTap: () {
-            String generatedPassword = generatePassword();  // <-- Updated this line
-            passwordController.text = generatedPassword;
-            passNotifier.value = PasswordStrength.calculate(text: generatedPassword);
-          },
-          child: Text('Generate Password', style: TextStyle(color: Colors.blue)),
+        if (showGenerateButton) Padding(
+            padding: const EdgeInsets.only(right: 10.0, top: 5.0),
+            child: InkWell(
+                onTap: () async {
+                    String generatedPassword = await generatePassword(
+                        length: passwordLength!, 
+                        numUpperCase: numUpperCase!, 
+                        numLowerCase: numLowerCase!, 
+                        numSpecialChars: numSpecialChars!
+                    );
+                    passwordController.text = generatedPassword;
+                    passNotifier.value = PasswordStrength.calculate(text: generatedPassword);
+                },
+                child: Text('Generate Password', style: TextStyle(color: Colors.blue)),
+            ),
         ),
-      ),
       if (hintText == "Enter Password") Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: PasswordStrengthChecker(strength: passNotifier),

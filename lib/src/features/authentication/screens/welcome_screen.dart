@@ -21,43 +21,45 @@ class WelcomeScreen extends StatelessWidget {
         backgroundColor: tPrimaryColor, // Always use light mode background color
         body: Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.all(tDefaultSize),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Hero(
-                    tag: 'welcome-image-tag',
-                    child: Image(
-                      image: const AssetImage(tWelcomeScreenImage),
-                      width: width * 0.7,
-                      height: height * 0.6,
+            SingleChildScrollView( // <-- Add this
+              child: Container(
+                padding: const EdgeInsets.all(tDefaultSize),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Hero(
+                      tag: 'welcome-image-tag',
+                      child: Image(
+                        image: const AssetImage(tWelcomeScreenImage),
+                        width: width * 0.7,
+                        height: height * 0.6,
+                      ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      Text(tWelcomeTitle, style: Theme.of(context).textTheme.displaySmall),
-                      Text(tWelcomeSubTitle, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Get.to(() => const LoginScreen()),
-                          child: Text(tLogin.toUpperCase()),
+                    Column(
+                      children: [
+                        Text(tWelcomeTitle, style: Theme.of(context).textTheme.displaySmall),
+                        Text(tWelcomeSubTitle, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Get.to(() => const LoginScreen()),
+                            child: Text(tLogin.toUpperCase()),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10.0),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => Get.to(() => const SignUpScreen()),
-                          child: Text(tSignup.toUpperCase()),
+                        const SizedBox(width: 10.0),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => Get.to(() => const SignUpScreen()),
+                            child: Text(tSignup.toUpperCase()),
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ],

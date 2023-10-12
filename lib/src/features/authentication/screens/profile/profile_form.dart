@@ -6,6 +6,7 @@ import 'package:guardian_key/src/constants/colors.dart';
 import 'package:guardian_key/src/constants/sizes.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 
 class ProfileFormScreen extends StatelessWidget {
@@ -42,11 +43,6 @@ class ProfileFormScreen extends StatelessWidget {
           ),
           const SizedBox(height: tFormHeight - 20),
           TextFormField(
-            controller: email,
-            decoration: const InputDecoration(label: Text(tEmail), prefixIcon: Icon(LineAwesomeIcons.envelope_1)),
-          ),
-          const SizedBox(height: tFormHeight - 20),
-          TextFormField(
             controller: password,
             obscureText: true,
             decoration: InputDecoration(
@@ -61,21 +57,45 @@ class ProfileFormScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () async {
-                final userData = UserModel(
-                  id: user.id,
-                  email: email.text.trim(),
-                  password: password.text.trim(),
-                  firstName: firstName.text.trim(),
-                  lastName: lastName.text.trim(),
-                  dateOfBirth: user.dateOfBirth,
-                  gender: user.gender,
-                );
+          onPressed: () async {
+            final userData = UserModel(
+              id: user.id,
+              email: email.text.trim(),
+              password: password.text.trim(),
+              firstName: firstName.text.trim(),
+              lastName: lastName.text.trim(),
+              dateOfBirth: user.dateOfBirth,
+              gender: user.gender,
+            );
 
-                await controller.updateRecord(userData);
-              },
+            // Update Firebase Auth Email and Password
+            final currentUser = FirebaseAuth.instance.currentUser;
+
+            if (currentUser != null) {
+              if (currentUser.email != email.text.trim()) {
+                try {
+                  await currentUser.updateEmail(email.text.trim());
+                } catch (e) {
+                  print("Error updating email: $e");
+                  // Handle errors: e.g. show a dialog with the error
+                }
+              }
+
+              if (password.text.trim().isNotEmpty) {
+                try {
+                  await currentUser.updatePassword(password.text.trim());
+                } catch (e) {
+                  print("Error updating password: $e");
+                  // Handle errors: e.g. show a dialog with the error
+                }
+              }
+            }
+
+            await controller.updateRecord(userData);
+          },
+
               style: ElevatedButton.styleFrom(
-                  backgroundColor: tPrimaryColor, side: BorderSide.none, shape: const StadiumBorder()),
+                  backgroundColor: darkBlue, side: BorderSide.none, shape: const StadiumBorder()),
               child: const Text(tSaveProfile, style: TextStyle(color: tSecondaryColor)),
             ),
           ),
