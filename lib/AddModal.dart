@@ -8,6 +8,8 @@ import 'package:password_strength_checker/password_strength_checker.dart';
 import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
 import 'package:guardian_key/src/features/authentication/controllers/addmodal_controller.dart';
 import 'package:guardian_key/src/services/login_service.dart';
+import 'package:guardian_key/src/features/authentication/screens/profile/passwordconfig.dart';
+
 
 
 class AddModal extends StatefulWidget {
@@ -32,6 +34,10 @@ class AddModalState extends State<AddModal> {
   TextEditingController userIDController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController(); // Create the password controller
+  final weakPasswordAlertNotifier = ValueNotifier<bool>(false);
+  final colorNotifier = ValueNotifier<Color>(Colors.orange);
+
+
 
   @override
   void initState() {
@@ -111,34 +117,55 @@ Future<void> _fetchPasswordSettings() async {
                 children: [
                     // Ok Done Button
                     SizedBox(
-                        height: screenHeight * 0.065,
-                        width: screenWidth * 1.0 * 0.8,
-                        child: ElevatedButton(
-                            // ... other properties ...
-                            onPressed: () async {
-                                // Create a new LoginModel instance with the data from text fields
-                                LoginModel login = LoginModel(
-                                  id: widget.passwordO?.id, // Add this line
-                                  websiteName: websiteNameController.text.trim(),
-                                  userID: userIDController.text.trim(),
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
+                      height: screenHeight * 0.065,
+                      width: screenWidth * 1.0 * 0.8,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (websiteNameController.text.trim().isEmpty) {
+                            // Show an error dialog to the user
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text('Website/Application Name cannot be empty.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
                                 );
+                              },
+                            );
+                            return; 
+                          }
+                        
+                        // Create a new LoginModel instance with the data from text fields
+                          LoginModel login = LoginModel(
+                            id: widget.passwordO?.id, // Add this line
+                            websiteName: websiteNameController.text.trim(),
+                            userID: userIDController.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                            );
 
-                                // Check if login already exists
-                                LoginModel? existingLogin = await AddModalController.instance.getLoginByWebsiteName(login.websiteName);
+                        // Check if login already exists
+                          LoginModel? existingLogin = await AddModalController.instance.getLoginByWebsiteName(login.websiteName);
 
-                                if (existingLogin == null) {
-                                    // Call the addLogin method to save the login
-                                    AddModalController.instance.addLogin(login);
-                                } else {
-                                    // Call the updateLogin method to update the existing login
-                                    AddModalController.instance.updateLogin(login);
-                                }
+                          if (existingLogin == null) {
+                          // Call the addLogin method to save the login
+                            AddModalController.instance.addLogin(login);
+                            } else {
+                            // Call the updateLogin method to update the existing login
+                            AddModalController.instance.updateLogin(login);
+                            }
 
-                                // Close the modal
-                                Navigator.pop(context);
-                            },
+                          // Close the modal
+                          Navigator.pop(context);
+                        },
                             child: const Text(
                                 "Ok Done",
                                 style: TextStyle(fontSize: 16, color: Colors.white),
@@ -181,55 +208,115 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
     children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: TextFormField(
-          controller: controller,
-          onChanged: (value) {
-            if (hintText == "Enter Password") {
-              passNotifier.value = PasswordStrength.calculate(text: value);
-            }
-          },
-          decoration: InputDecoration(
-              prefixIcon: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    20, 5, 5, 5), // add padding to adjust icon
-                child: Icon(
-                  icon,
-                  color: Constants.searchGrey,
-                ),
-              ),
-              filled: true,
-              contentPadding: const EdgeInsets.all(16),
-              hintText: hintText,
-              hintStyle: TextStyle(
-                  color: Constants.searchGrey, fontWeight: FontWeight.w500),
-              fillColor: const Color.fromARGB(247, 232, 235, 237),
-              border: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    width: 0,
-                    style: BorderStyle.none,
+      Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: TextFormField(
+                controller: controller,
+                onChanged: (value) {
+                  if (hintText == "Enter Password") {
+                    final strength = PasswordStrength.calculate(text: value);
+                    passNotifier.value = strength;
+                    weakPasswordAlertNotifier.value = strength == PasswordStrength.alreadyExposed || strength == PasswordStrength.weak;
+                  }
+                },
+                decoration: InputDecoration(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      20, 5, 5, 5
+                    ),
+                    child: Icon(
+                      icon,
+                      color: Constants.searchGrey,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(20))),
-          style: const TextStyle(),
-        ),
+                  filled: true,
+                  contentPadding: const EdgeInsets.all(16),
+                  hintText: hintText,
+                  hintStyle: TextStyle(
+                    color: Constants.searchGrey, fontWeight: FontWeight.w500
+                  ),
+                  fillColor: const Color.fromARGB(247, 232, 235, 237),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      width: 0,
+                      style: BorderStyle.none,
+                    ),
+                    borderRadius: BorderRadius.circular(20)
+                  ),
+                ),
+                style: const TextStyle(),
+              ),
+            ),
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: weakPasswordAlertNotifier,
+            builder: (context, isWeak, child) {
+              if (hintText == "Enter Password" && isWeak) { // Add the hintText check here
+                return TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: Duration(seconds: 1),
+                  onEnd: () {
+                    colorNotifier.value = colorNotifier.value == Colors.orange ? Colors.red : Colors.orange;
+                  },
+                  builder: (context, double opacity, child) {
+                    return ValueListenableBuilder<Color>(
+                      valueListenable: colorNotifier,
+                      builder: (context, color, _) {
+                        return Opacity(
+                          opacity: opacity,
+                          child: Icon(Icons.warning, color: color),
+                        );
+                      },
+                    );
+                  },
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
+
+        ],
       ),
-        if (showGenerateButton) Padding(
+      if (showGenerateButton) Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0, top: 5.0),
+            child: InkWell(
+              onTap: () {
+                // Navigate to Password Configuration Screen
+                Get.to(() => PasswordConfigScreen());
+              },
+              child: Container(
+                padding: const EdgeInsets.only(left: 10.0),  // Add padding here
+                child: Text('Password \nConfiguration', 
+                            style: TextStyle(color: Colors.blue)),
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.only(right: 10.0, top: 5.0),
             child: InkWell(
-                onTap: () async {
-                    String generatedPassword = await generatePassword(
-                        length: passwordLength!, 
-                        numUpperCase: numUpperCase!, 
-                        numLowerCase: numLowerCase!, 
-                        numSpecialChars: numSpecialChars!
-                    );
-                    passwordController.text = generatedPassword;
-                    passNotifier.value = PasswordStrength.calculate(text: generatedPassword);
-                },
-                child: Text('Generate Password', style: TextStyle(color: Colors.blue)),
+              onTap: () async {
+                String generatedPassword = await generatePassword(
+                  length: passwordLength!, 
+                  numUpperCase: numUpperCase!, 
+                  numLowerCase: numLowerCase!, 
+                  numSpecialChars: numSpecialChars!
+                );
+                passwordController.text = generatedPassword;
+                passNotifier.value = PasswordStrength.calculate(text: generatedPassword);
+              },
+              child: Text('Generate \nPassword', style: TextStyle(color: Colors.blue)),
             ),
-        ),
+          ),
+        ],
+      ),
+
       if (hintText == "Enter Password") Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: PasswordStrengthChecker(strength: passNotifier),
@@ -237,6 +324,7 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
     ],
   );
 }
+
 
 
   Widget formHeading(String text) {

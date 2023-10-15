@@ -8,6 +8,7 @@ import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
 import 'package:guardian_key/src/features/authentication/models/login_model.dart';
+import 'package:password_strength_checker/password_strength_checker.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/profile_screen.dart';
 import 'package:guardian_key/src/services/login_service.dart'; 
@@ -22,6 +23,8 @@ class HomePageWidget extends StatefulWidget {
 
 class HomePageWidgetState extends State<HomePageWidget> {
   List<LoginModel> displayedPasswords = [];
+  final weakPasswordAlertNotifier = ValueNotifier<bool>(false);
+
 
   final TextEditingController _searchController = TextEditingController();
   UserModel? _currentUser;
@@ -72,6 +75,13 @@ class HomePageWidgetState extends State<HomePageWidget> {
       _fetchUserData(); // Fetch data again when search is cleared
     }
   }
+
+    @override
+  void dispose() {
+    weakPasswordAlertNotifier.dispose();
+    super.dispose();
+  }
+
 
 
   @override
@@ -127,67 +137,90 @@ class HomePageWidgetState extends State<HomePageWidget> {
   }
 
 
-  Widget PasswordTile(LoginModel passwordO, BuildContext context, {bool highlight = false}){
-    double screenHeight = MediaQuery.of(context).size.height;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: highlight ? Colors.yellow.withOpacity(0.2) : null,  // Conditional highlight
-          borderRadius: BorderRadius.circular(8.0)  // Adding some roundness to the tile
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // profile row
-            Row(
-              children: [
-                EditIconButton(passwordO, context),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 0, 8, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        passwordO.websiteName,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 22, 22, 22),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        passwordO.email,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 39, 39, 39),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      )
-                    ],
+Widget PasswordTile(LoginModel passwordO, BuildContext context, {bool highlight = false}) {
+  final strength = PasswordStrength.calculate(text: passwordO.password);
+
+  weakPasswordAlertNotifier.value = strength == PasswordStrength.alreadyExposed || strength == PasswordStrength.weak;
+
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 10),
+    child: Container(
+      decoration: BoxDecoration(
+        color: highlight ? Colors.yellow.withOpacity(0.2) : null,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Row(
+        children: [
+          // Edit Icon
+          Expanded(
+            flex: 1,
+            child: EditIconButton(passwordO, context),
+          ),
+
+          // Details (website name and email)
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    passwordO.websiteName,
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 22, 22, 22),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                )
-              ],
+                  Text(
+                    passwordO.email,
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 39, 39, 39),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            InkWell(
+          ),
+
+          // Alert Icon
+          Expanded(
+            flex: 1,
+            child: weakPasswordAlertNotifier.value
+                ? Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(Icons.warning, color: Colors.red),
+                  )
+                : Container(), // Empty container if no alert
+          ),
+
+          // Copy Button
+          Expanded(
+            flex: 1,
+            child: InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: passwordO.password));
-                // Optionally, you can show a Snackbar or Toast to notify the user that the password has been copied
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Password copied to clipboard!')),
                 );
               },
-              child: SvgPicture.asset(
-                "assets/copy.svg",
-                semanticsLabel: 'Copy password icon',
-                height: screenHeight * 0.030,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: SvgPicture.asset(
+                  "assets/copy.svg",
+                  semanticsLabel: 'Copy password icon',
+                ),
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
 Widget EditIconButton(LoginModel password, BuildContext context){
   return InkWell(

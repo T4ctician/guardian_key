@@ -9,7 +9,6 @@ import 'package:guardian_key/src/features/authentication/screens/profile/update_
 import 'package:guardian_key/src/features/authentication/screens/profile/widgets/image_with_icon.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/widgets/profile_menu.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/widgets/toggle_menu_widget.dart';
-import 'package:guardian_key/src/features/authentication/screens/profile/passwordconfig.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 
 
@@ -84,9 +83,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 initialValue: false,
                 onChanged: (value) {},
               ),
-              ProfileMenuWidget(title: "Password Configuration", icon: LineAwesomeIcons.cog, onPress: () {
-                Get.to(() => PasswordConfigScreen());
-              }),
               const Divider(),
               const SizedBox(height: 10),
               ProfileMenuWidget(title: "Information", icon: LineAwesomeIcons.info, onPress: () {}),
