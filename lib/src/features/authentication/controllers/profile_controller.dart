@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
-import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
+import 'package:guardian_key/src/features/authentication/models/credential_model.dart'; 
 import 'package:guardian_key/src/repository/authentication_repository.dart';
 import 'package:guardian_key/src/repository/login_repository.dart';
 import 'package:guardian_key/src/repository/user_repository.dart';
@@ -161,9 +161,9 @@ Future<void> deleteUser() async {
     AuthCredential credential = EmailAuthProvider.credential(email: currentUser.email!, password: password);
     await currentUser.reauthenticateWithCredential(credential);
 
-    // Delete all login records associated with the user
-    List<LoginModel> allLogins = await LoginRepository.instance.getAllLogins();
-    for (LoginModel login in allLogins) {
+    // Delete all Credential records associated with the user
+    List<CredentialModel> allLogins = await LoginRepository.instance.getAllLogins();
+    for (CredentialModel login in allLogins) {
       await LoginRepository.instance.deleteLogin(login.id!);
     }
 

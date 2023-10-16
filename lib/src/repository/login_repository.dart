@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
+import 'package:guardian_key/src/features/authentication/models/credential_model.dart'; 
 import 'package:guardian_key/src/repository/exceptions/t_exceptions.dart';
 
 class LoginRepository extends GetxController {
@@ -21,7 +21,7 @@ class LoginRepository extends GetxController {
   }
 
   /// Store login data
-Future<void> createLogin(LoginModel login) async {
+Future<void> createLogin(CredentialModel login) async {
     try {
       await _db.collection("Users").doc(checkUserId).collection("Logins").add(login.toJson());
     } catch (e) {
@@ -29,18 +29,18 @@ Future<void> createLogin(LoginModel login) async {
     }
   }
   /// Fetch specific login details
-  Future<LoginModel> getLoginDetails(String email) async {
+  Future<CredentialModel> getLoginDetails(String email) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("Email", isEqualTo: email).get();
       if (snapshot.docs.isEmpty) throw 'No such login found';
-      return LoginModel.fromSnapshot(snapshot.docs.first);
+      return CredentialModel.fromSnapshot(snapshot.docs.first);
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
 
   /// Update Login details
-  Future<void> updateLoginRecord(LoginModel login) async {
+  Future<void> updateLoginRecord(CredentialModel login) async {
     try {
       await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update(login.toJson());
     } catch (e) {
@@ -75,30 +75,30 @@ Future<void> deleteLogin(String id) async {
 }
 
 // Fetch a login by website name
-Future<LoginModel?> getLoginByWebsiteName(String websiteName) async {
+Future<CredentialModel?> getLoginByWebsiteName(String websiteName) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("WebsiteName", isEqualTo: websiteName).get();
       if (snapshot.docs.isEmpty) return null;
-      return LoginModel.fromSnapshot(snapshot.docs.first);
+      return CredentialModel.fromSnapshot(snapshot.docs.first);
     } catch (e) {
         throw e.toString();
     }
 }
 
   //
-    Future<List<LoginModel>> getAllLogins() async {
+    Future<List<CredentialModel>> getAllLogins() async {
         try {
             final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").get();
-            return snapshot.docs.map((doc) => LoginModel.fromSnapshot(doc)).toList();
+            return snapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc)).toList();
         } catch (e) {
             throw handleFirebaseErrors(e);
         }
     }
 
   // Inside the LoginRepository class
-  Stream<List<LoginModel>> listenToAllLogins() {
+  Stream<List<CredentialModel>> listenToAllLogins() {
     return _db.collection("Users").doc(checkUserId).collection("Logins").snapshots().map((querySnapshot) {
-      return querySnapshot.docs.map((doc) => LoginModel.fromSnapshot(doc)).toList();
+      return querySnapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc)).toList();
     });
 }
 

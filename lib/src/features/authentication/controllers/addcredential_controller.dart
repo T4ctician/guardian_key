@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:guardian_key/src/features/authentication/models/login_model.dart';
+import 'package:guardian_key/src/features/authentication/models/credential_model.dart';
 import 'package:guardian_key/src/repository/login_repository.dart';
 
-class AddModalController extends GetxController {
-  static AddModalController get instance => Get.find();
+class AddCredentialController extends GetxController {
+  static AddCredentialController get instance => Get.find();
 
   /// Repositories
   final _loginRepo = LoginRepository.instance;
@@ -14,7 +14,7 @@ class AddModalController extends GetxController {
   }
 
   /// Add a new login
-  Future<void> addLogin(LoginModel login) async {
+  Future<void> addLogin(CredentialModel login) async {
     try {
       await _loginRepo.createLogin(login);
       Get.snackbar("Success", "Login added successfully!",
@@ -26,7 +26,7 @@ class AddModalController extends GetxController {
   }
 
   /// Update a login
-  Future<void> updateLogin(LoginModel login) async {
+  Future<void> updateLogin(CredentialModel login) async {
     try {
       await _loginRepo.updateLoginRecord(login);
       Get.snackbar("Success", "Login updated successfully!",
@@ -50,7 +50,7 @@ class AddModalController extends GetxController {
   }
 
   // Fetch a login by its website name
-  Future<LoginModel?> getLoginByWebsiteName(String websiteName) async {
+  Future<CredentialModel?> getLoginByWebsiteName(String websiteName) async {
     return await _loginRepo.getLoginByWebsiteName(websiteName);
   }
 }

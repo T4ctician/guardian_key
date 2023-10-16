@@ -33,11 +33,21 @@ class _PasswordConfigScreenState extends State<PasswordConfigScreen> {
   }
 
   Future<void> _saveSettings() async {
+  if (_numUpperCase + _numLowerCase + _numSpecialChars > _passwordLength) {
+    // Inform the user that the configuration is invalid.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Invalid configuration! Sum of character counts exceeds total length.'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+    return;
+  }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('${userId}_passwordLength', _passwordLength);
-    await prefs.setDouble('${userId}_numUpperCase', _numUpperCase);
-    await prefs.setDouble('${userId}_numLowerCase', _numLowerCase);
-    await prefs.setDouble('${userId}_numSpecialChars', _numSpecialChars);
+      await prefs.setDouble('${userId}_passwordLength', _passwordLength);
+      await prefs.setDouble('${userId}_numUpperCase', _numUpperCase);
+      await prefs.setDouble('${userId}_numLowerCase', _numLowerCase);
+      await prefs.setDouble('${userId}_numSpecialChars', _numSpecialChars);
     // Show a snackbar on the previous screen (ProfileScreen) after navigating back
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -50,7 +60,6 @@ class _PasswordConfigScreenState extends State<PasswordConfigScreen> {
     Navigator.pop(context);
   }
   
-
 @override
   Widget build(BuildContext context) {
     return Scaffold(

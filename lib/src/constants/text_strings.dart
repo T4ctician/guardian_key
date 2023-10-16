@@ -58,6 +58,7 @@ const String tOtpMessage = "Enter the verification code sent at ";
 
 // -- Homepage - Text
 const String tSearchbox = "Search Website/App Password";
+const String tNotebox = "Search Note Title";
 const String tCategory = "Category";
 const String tNote = "Notes";
 const String tHomePageSearch = "Search...";

@@ -13,11 +13,9 @@ Future<String> generatePassword({
   required int numLowerCase,
   required int numSpecialChars,
 }) async {
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  int numUpperCase = prefs.getDouble('numUpperCase')?.toInt() ?? 1;
-  int numLowerCase = prefs.getDouble('numLowerCase')?.toInt() ?? 1;
-  int numSpecialChars = prefs.getDouble('numSpecialChars')?.toInt() ?? 1;
+  if (numUpperCase + numLowerCase + numSpecialChars > length) {
+    throw ArgumentError('Sum of uppercase, lowercase, and special characters should not exceed total length.');
+  }
 
   String chars = "$letterLowerCase$letterUpperCase$number$special";
   
@@ -41,3 +39,4 @@ Future<String> generatePassword({
   password = passwordChars.join('');
   return password;
 }
+

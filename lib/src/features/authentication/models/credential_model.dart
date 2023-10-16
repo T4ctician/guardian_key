@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LoginModel {
+class CredentialModel {
   final String? id;
   final String websiteName;    // Name of the website/application
   final String email;
@@ -8,7 +8,7 @@ class LoginModel {
   final String userID;         // UserID for the website/application
 
   /// Constructor
-  const LoginModel({
+  const CredentialModel({
     this.id,
     required this.websiteName,
     required this.email,
@@ -26,10 +26,10 @@ class LoginModel {
     };
   }
 
-  /// Map Json oriented document snapshot from Firebase to LoginModel
-  factory LoginModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document){
+  /// Map Json oriented document snapshot from Firebase to CredentialModel
+  factory CredentialModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document){
     final data = document.data()!;
-    return LoginModel(
+    return CredentialModel(
       id: document.id,
       websiteName: data["WebsiteName"],
       userID: data["UserID"],

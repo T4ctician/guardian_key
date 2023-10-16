@@ -1,17 +1,16 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import 'package:guardian_key/AddModal.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
-import 'package:guardian_key/src/features/authentication/models/login_model.dart';
-import 'package:password_strength_checker/password_strength_checker.dart';
+import 'package:guardian_key/src/features/authentication/models/credential_model.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/profile_screen.dart';
+import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/note_section.dart';
 import 'package:guardian_key/src/services/login_service.dart'; 
+import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/credential_section.dart';
+
 
 
 class HomePageWidget extends StatefulWidget {
@@ -22,21 +21,45 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class HomePageWidgetState extends State<HomePageWidget> {
-  List<LoginModel> displayedPasswords = [];
+  List<CredentialModel> displayedPasswords = [];
   final weakPasswordAlertNotifier = ValueNotifier<bool>(false);
 
-
-  final TextEditingController _searchController = TextEditingController();
   UserModel? _currentUser;
   final loginService = LoginService();
+  String? currentSection;
 
+  void _showCredentialModal() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20.0),
+    ),
+    builder: (BuildContext bc) {
+      return CredentialsSection(); 
+    }
+  ).then((value) {
+  });
+}
 
+  void _showNoteModal() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20.0),
+    ),
+    builder: (BuildContext bc) {
+      return NotesSection(); 
+    }
+  ).then((value) {
+  });
+}
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
-    _searchController.addListener(_onSearchChanged);
   }
 
     _fetchUserData() async {
@@ -60,29 +83,12 @@ class HomePageWidgetState extends State<HomePageWidget> {
   }
 }
 
-  void _onSearchChanged() {
-    final input = _searchController.text;
-
-    if (input.isNotEmpty) {
-      final matchingPasswords = displayedPasswords.where((login) =>
-          login.websiteName.toLowerCase().contains(input.toLowerCase()));
-      final nonMatchingPasswords = displayedPasswords.where((password) =>
-          !password.websiteName.toLowerCase().contains(input.toLowerCase()));
-      setState(() {
-        displayedPasswords = [...matchingPasswords, ...nonMatchingPasswords];
-      });
-    } else {
-      _fetchUserData(); // Fetch data again when search is cleared
-    }
-  }
 
     @override
   void dispose() {
     weakPasswordAlertNotifier.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -91,43 +97,21 @@ class HomePageWidgetState extends State<HomePageWidget> {
 
     return SafeArea(
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => bottomModal(context),
-          backgroundColor: Constants.fabBackground,
-          child: const Icon(Icons.add),
-        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
             child: Column(
               children: [
                 profilePic(screenHeight),
-                const SizedBox(height: 20),
-                searchText(tSearchbox),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 HeadingText(tCategory),
                 const SizedBox(height: 10),
                 CategoryBoxes(),
-                const SizedBox(height: 10),
-                HeadingText("Recently Used"),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 RefreshIndicator(
                   onRefresh: _refreshData,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: displayedPasswords.length,
-                    itemBuilder: (context, index) {
-                      final password = displayedPasswords[index];
-                      return PasswordTile(
-                        password, 
-                        context, 
-                        highlight: index == 0 && _searchController.text.isNotEmpty
-                      );
-                    }
-                  ),
-                )
-
+                  child: getCurrentSection(),
+                ),
               ],
             ),
           ),
@@ -135,102 +119,6 @@ class HomePageWidgetState extends State<HomePageWidget> {
       ),
     );
   }
-
-
-Widget PasswordTile(LoginModel passwordO, BuildContext context, {bool highlight = false}) {
-  final strength = PasswordStrength.calculate(text: passwordO.password);
-
-  weakPasswordAlertNotifier.value = strength == PasswordStrength.alreadyExposed || strength == PasswordStrength.weak;
-
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 10),
-    child: Container(
-      decoration: BoxDecoration(
-        color: highlight ? Colors.yellow.withOpacity(0.2) : null,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        children: [
-          // Edit Icon
-          Expanded(
-            flex: 1,
-            child: EditIconButton(passwordO, context),
-          ),
-
-          // Details (website name and email)
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    passwordO.websiteName,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 22, 22, 22),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    passwordO.email,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 39, 39, 39),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Alert Icon
-          Expanded(
-            flex: 1,
-            child: weakPasswordAlertNotifier.value
-                ? Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(Icons.warning, color: Colors.red),
-                  )
-                : Container(), // Empty container if no alert
-          ),
-
-          // Copy Button
-          Expanded(
-            flex: 1,
-            child: InkWell(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: passwordO.password));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password copied to clipboard!')),
-                );
-              },
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: SvgPicture.asset(
-                  "assets/copy.svg",
-                  semanticsLabel: 'Copy password icon',
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget EditIconButton(LoginModel password, BuildContext context){
-  return InkWell(
-    onTap: () {
-      bottomModal(context, passwordO: password);  // Pass the password object
-    },
-    child: Icon(Icons.edit, color: Colors.black),
-  );
-}
-
 
   Widget HeadingText(String text) {
     return Align(
@@ -245,50 +133,103 @@ Widget EditIconButton(LoginModel password, BuildContext context){
     );
   }
 
-Widget CategoryBoxes() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: [
-      Column(
-        children: [
-          CategoryBox(
-            outerColor: Constants.lightBlue,
-            innerColor: Constants.darkBlue,
-            logoAsset: "assets/codesandbox.svg",
+  Widget CategoryBoxes() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 150,
+                width: 400,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentSection = "Credential";
+                      _showCredentialModal();
+                    });
+                  },
+                  child: CategoryBox(
+                    outerColor: Constants.lightBlue,
+                    innerColor: Constants.darkBlue,
+                    logoAsset: "assets/codesandbox.svg",
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5.0),  // Reduced height for spacing
+              const Text(
+                "Credential",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2.0),  // spacing between the box and the text
-          const Text(
-            "Login",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black, // or any desired color
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 150,
+                width: 400,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentSection = "Notes";
+                      _showNoteModal();
+                    });
+                  },
+                  child: CategoryBox(
+                  outerColor: Constants.lightGreen,
+                  innerColor: Constants.darkGreen,
+                  logoAsset: "assets/compass.svg",
+                ),
+                ),
+              ),
+              const SizedBox(height: 5.0),
+              const Text(
+                "Note",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      Column(
-        children: [
-          CategoryBox(
-            outerColor: Constants.lightGreen,
-            innerColor: Constants.darkGreen,
-            logoAsset: "assets/compass.svg",
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 150,
+                width: 400,
+                child: CategoryBox(
+                  outerColor: Constants.lightRed,
+                  innerColor: Constants.darkRed,
+                  logoAsset: "assets/credit-card.svg",
+                ),
+              ),
+              const SizedBox(height: 5.0),
+              const Text(
+                "Credit Card",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2.0),
-          const Text(
-            "Note",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black, 
-            ),
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
+        ),
+      ],
+    );
+  }
 
   Widget circleAvatarRound() {
     return const CircleAvatar(
@@ -360,8 +301,6 @@ Widget CategoryBoxes() {
     );
   }
 
-
-
 String greeting() {
   var hour = DateTime.now().hour;
   if (hour < 12) {
@@ -373,123 +312,19 @@ String greeting() {
   return 'Evening';
 }
 
-
-Widget searchText(String hintText) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 10),
-    child: TextFormField(
-      controller: _searchController,
-      decoration: InputDecoration(
-          prefixIcon: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                20, 5, 5, 5), // add padding to adjust icon
-            child: Icon(
-              Icons.search,
-              color: Constants.searchGrey,
-            ),
-          ),
-          filled: true,
-          contentPadding: const EdgeInsets.all(16),
-          hintText: hintText,
-          hintStyle: TextStyle(
-              color: Constants.searchGrey, fontWeight: FontWeight.w500),
-          fillColor: const Color.fromARGB(247, 232, 235, 237),
-          border: OutlineInputBorder(
-              borderSide: const BorderSide(
-                width: 0,
-                style: BorderStyle.none,
-              ),
-              borderRadius: BorderRadius.circular(20))),
-      style: const TextStyle(),
-    ),
-  );
-}
-
-
-
-
-Future<dynamic> bottomModal(BuildContext context, {LoginModel? passwordO}){
-    return showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        isScrollControlled: true,
-        context: context,
-        builder: (BuildContext bc) {
-          return Wrap(children: <Widget>[
-            Container(
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(25.0),
-                        topRight: Radius.circular(25.0))),
-                child: AddModal(passwordO: passwordO),  // Pass the passwordO to AddModal
-              ),
-            )
-          ]);
-        }
-        ).then((Value){
-          _fetchUserData();
-        });
+Widget getCurrentSection() {
+  switch (currentSection) {
+    case "Credential":
+      return CredentialsSection();
+    case "Note":
+      return NotesSection(); 
+    case "Credit Card":
+      // Return the Credit Card content widget when you create it
+      return Text("Credit Card Section"); // placeholder
+    default:
+      return Container(); // default empty container or any default view
   }
-
-
-Widget bottomSheetWidgets(BuildContext context) {
-  double screenHeight = MediaQuery.of(context).size.height;
-  double screenWidth = MediaQuery.of(context).size.width;
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
-    child: Column(
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            width: screenWidth * 0.4,
-            height: 5,
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 156, 156, 156),
-                borderRadius: BorderRadius.circular(20)),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(
-          children: [
-            Container(
-              height: 60,
-              width: 130,
-              decoration: BoxDecoration(
-                  color: Constants.logoBackground,
-                  borderRadius: BorderRadius.circular(20)),
-              child: FractionallySizedBox(
-                heightFactor: 0.5,
-                widthFactor: 0.5,
-                child: Container(
-                  child: const Row(
-                    children: [
-                      Icon(Icons.add),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "Add",
-                        style: TextStyle(fontSize: 14),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
 }
+
 
 }

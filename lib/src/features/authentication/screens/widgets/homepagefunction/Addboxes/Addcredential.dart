@@ -1,19 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'src/constants/constants.dart';
+import '../../../../../../constants/constants.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/models/random_password.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
-import 'package:guardian_key/src/features/authentication/models/login_model.dart'; 
-import 'package:guardian_key/src/features/authentication/controllers/addmodal_controller.dart';
+import 'package:guardian_key/src/features/authentication/models/credential_model.dart'; 
+import 'package:guardian_key/src/features/authentication/controllers/addcredential_controller.dart';
 import 'package:guardian_key/src/services/login_service.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/passwordconfig.dart';
 
 
 
 class AddModal extends StatefulWidget {
-  final LoginModel? passwordO;
+  final CredentialModel? passwordO;
 
   const AddModal({Key? key, this.passwordO}) : super(key: key);
 
@@ -54,16 +54,15 @@ class AddModalState extends State<AddModal> {
     _fetchPasswordSettings();
   }
 
-Future<void> _fetchPasswordSettings() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  setState(() {
-    passwordLength = (prefs.getDouble('${userId}_passwordLength') ?? 8.0).toInt();
-    numUpperCase = (prefs.getDouble('${userId}_numUpperCase') ?? 1.0).toInt();
-    numLowerCase = (prefs.getDouble('${userId}_numLowerCase') ?? 1.0).toInt();
-    numSpecialChars = (prefs.getDouble('${userId}_numSpecialChars') ?? 1.0).toInt();
-  });
-}
-
+  Future<void> _fetchPasswordSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      passwordLength = (prefs.getDouble('${userId}_passwordLength') ?? 8.0).toInt();
+      numUpperCase = (prefs.getDouble('${userId}_numUpperCase') ?? 1.0).toInt();
+      numLowerCase = (prefs.getDouble('${userId}_numLowerCase') ?? 1.0).toInt();
+      numSpecialChars = (prefs.getDouble('${userId}_numSpecialChars') ?? 1.0).toInt();
+    });
+  }
 
   @override
   void dispose() {
@@ -119,32 +118,49 @@ Future<void> _fetchPasswordSettings() async {
                     SizedBox(
                       height: screenHeight * 0.065,
                       width: screenWidth * 1.0 * 0.8,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          if (websiteNameController.text.trim().isEmpty) {
-                            // Show an error dialog to the user
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text('Website/Application Name cannot be empty.'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('Ok'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                            return; 
-                          }
+                      child: 
+                      ElevatedButton(
+                      onPressed: () async {
+                        String websiteName = websiteNameController.text.trim();
+                        String userId = userIDController.text.trim();
+                        String email = emailController.text.trim();
+                        String password = passwordController.text.trim();
+
+                        if (websiteName.isEmpty) {
+                          // Show a snackbar to the user
+                          Get.snackbar(
+                            'Error',
+                            'Website/Application Name cannot be empty.',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        if (email.isEmpty) {
+                          // Show a snackbar to the user
+                          Get.snackbar(
+                            'Error',
+                            'Email cannot be empty.',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        if (password.isEmpty) {
+                          // Show a snackbar to the user
+                          Get.snackbar(
+                            'Error',
+                            'Password cannot be empty.',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
                         
-                        // Create a new LoginModel instance with the data from text fields
-                          LoginModel login = LoginModel(
+                        // Create a new CredentialModel instance with the data from text fields
+                          CredentialModel login = CredentialModel(
                             id: widget.passwordO?.id, // Add this line
                             websiteName: websiteNameController.text.trim(),
                             userID: userIDController.text.trim(),
@@ -153,14 +169,14 @@ Future<void> _fetchPasswordSettings() async {
                             );
 
                         // Check if login already exists
-                          LoginModel? existingLogin = await AddModalController.instance.getLoginByWebsiteName(login.websiteName);
+                          CredentialModel? existingLogin = await AddCredentialController.instance.getLoginByWebsiteName(login.websiteName);
 
                           if (existingLogin == null) {
                           // Call the addLogin method to save the login
-                            AddModalController.instance.addLogin(login);
+                            AddCredentialController.instance.addLogin(login);
                             } else {
                             // Call the updateLogin method to update the existing login
-                            AddModalController.instance.updateLogin(login);
+                            AddCredentialController.instance.updateLogin(login);
                             }
 
                           // Close the modal
@@ -177,12 +193,11 @@ Future<void> _fetchPasswordSettings() async {
                   height: screenHeight * 0.065,
                   width: screenHeight * 0.065,
                   child: ElevatedButton(
-                    // ... other properties ...
                     onPressed: () async {
                       bool? shouldDelete = await showConfirmationDialog(context);
                       if (shouldDelete == true) {
                         // Delete the login based on the unique identifier
-                        AddModalController.instance.deleteLogin(selectedLoginId ?? ''); // using websiteName as a unique ID for now
+                        AddCredentialController.instance.deleteLogin(selectedLoginId ?? ''); // using websiteName as a unique ID for now
 
                         // Close the modal
                         Navigator.of(context).pop();
@@ -279,6 +294,7 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
             },
           ),
 
+
         ],
       ),
       if (showGenerateButton) Row(
@@ -308,8 +324,12 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
                   numLowerCase: numLowerCase!, 
                   numSpecialChars: numSpecialChars!
                 );
-                passwordController.text = generatedPassword;
-                passNotifier.value = PasswordStrength.calculate(text: generatedPassword);
+                setState(() {  // Add setState to force a rebuild
+                  passwordController.text = generatedPassword;
+                  final strength = PasswordStrength.calculate(text: generatedPassword);
+                  passNotifier.value = strength;
+                  weakPasswordAlertNotifier.value = strength == PasswordStrength.alreadyExposed || strength == PasswordStrength.weak;
+                });
               },
               child: Text('Generate \nPassword', style: TextStyle(color: Colors.blue)),
             ),
@@ -412,7 +432,7 @@ Widget websiteContainer(BuildContext context, LoginService loginService) {
   );
 }
 
-void showAddModal(BuildContext context, {LoginModel? passwordO}) {
+void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
   Navigator.of(context).pop();
   showModalBottomSheet(
     shape: RoundedRectangleBorder(
@@ -441,7 +461,7 @@ void showAddModal(BuildContext context, {LoginModel? passwordO}) {
 
 
   Widget websiteBlock(String websiteString, BuildContext context) {
-    return FutureBuilder<LoginModel?>(
+    return FutureBuilder<CredentialModel?>(
       // Replace Constants.passwordData with a call to LoginService method to get the selected password
       future: loginService.getPasswordByWebsiteName(websiteString), // Adjust the method name according to your LoginService
     builder: (context, snapshot) {
