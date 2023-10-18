@@ -7,7 +7,7 @@ class ToggleMenuWidget extends StatefulWidget {
   final bool initialValue;
   final ValueChanged<bool> onChanged;
 
-  ToggleMenuWidget({
+  const ToggleMenuWidget({super.key, 
     required this.title,
     required this.icon,
     required this.initialValue,

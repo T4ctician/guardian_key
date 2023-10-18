@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
@@ -7,6 +6,7 @@ import 'package:guardian_key/src/features/authentication/models/user_model.dart'
 import 'package:guardian_key/src/features/authentication/models/credential_model.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/profile_screen.dart';
+import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/creditcard_section.dart';
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/note_section.dart';
 import 'package:guardian_key/src/services/login_service.dart'; 
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/credential_section.dart';
@@ -36,7 +36,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
       borderRadius: BorderRadius.circular(20.0),
     ),
     builder: (BuildContext bc) {
-      return CredentialsSection(); 
+      return const CredentialsSection(); 
     }
   ).then((value) {
   });
@@ -50,7 +50,21 @@ class HomePageWidgetState extends State<HomePageWidget> {
       borderRadius: BorderRadius.circular(20.0),
     ),
     builder: (BuildContext bc) {
-      return NotesSection(); 
+      return const NotesSection(); 
+    }
+  ).then((value) {
+  });
+}
+
+void _showCreditCardModal() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20.0),
+    ),
+    builder: (BuildContext bc) {
+      return const CreditCardSection(); 
     }
   ).then((value) {
   });
@@ -62,16 +76,19 @@ class HomePageWidgetState extends State<HomePageWidget> {
     _fetchUserData();
   }
 
-    _fetchUserData() async {
-    final controller = ProfileController.instance;
-    final user = await controller.getUserData();
-    final passwordData = await loginService.fetchPasswordData();
+  _fetchUserData() async {
+      final controller = ProfileController.instance;
+      final user = await controller.getUserData();
+      final passwordData = await loginService.fetchPasswordData();
 
-    setState(() {
-      _currentUser = user;
-      displayedPasswords = passwordData;  // Update the displayedPasswords list with the fetched data
-    });
+      if (mounted) { // Check if the widget is still in the widget tree
+          setState(() {
+              _currentUser = user;
+              displayedPasswords = passwordData;  // Update the displayedPasswords list with the fetched data
+          });
+      }
   }
+
 
   Future<void> _refreshData() async {
   try {
@@ -110,7 +127,11 @@ class HomePageWidgetState extends State<HomePageWidget> {
                 const SizedBox(height: 15),
                 RefreshIndicator(
                   onRefresh: _refreshData,
-                  child: getCurrentSection(),
+                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(maxHeight: screenHeight * 0.6), 
+                                    // Adjust the maxHeight as needed. Here it's set to 60% of screen height.
+                                    child: getCurrentSection(),
+                  ),
                 ),
               ],
             ),
@@ -203,33 +224,41 @@ class HomePageWidgetState extends State<HomePageWidget> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 150,
-                width: 400,
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 150,
+              width: 400,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    currentSection = "Credit Card";
+                    _showCreditCardModal(); // Call the credit card modal function
+                  });
+                },
                 child: CategoryBox(
                   outerColor: Constants.lightRed,
                   innerColor: Constants.darkRed,
                   logoAsset: "assets/credit-card.svg",
                 ),
               ),
-              const SizedBox(height: 5.0),
-              const Text(
-                "Credit Card",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+            ),
+            const SizedBox(height: 5.0),
+            const Text(
+              "Credit Card",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget circleAvatarRound() {
     return const CircleAvatar(
@@ -254,7 +283,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
         );
       },
       child: Padding(
@@ -271,7 +300,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
                     _currentUser == null
                         ? "Loading..."
                         : "Hello, ${_currentUser!.firstName} ${_currentUser!.lastName}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(255, 22, 22, 22),
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -279,7 +308,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
                   ),
                   Text(
                     "Good ${greeting()}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(255, 39, 39, 39),
                       fontSize: 17,
                       fontWeight: FontWeight.w400,
@@ -291,7 +320,7 @@ class HomePageWidgetState extends State<HomePageWidget> {
             Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                icon: Icon(Icons.refresh, color: Colors.black),
+                icon: const Icon(Icons.refresh, color: Colors.black),
                 onPressed: _refreshData,
               ),
             ),
@@ -315,12 +344,11 @@ String greeting() {
 Widget getCurrentSection() {
   switch (currentSection) {
     case "Credential":
-      return CredentialsSection();
+      return const CredentialsSection();
     case "Note":
-      return NotesSection(); 
+      return const NotesSection(); 
     case "Credit Card":
-      // Return the Credit Card content widget when you create it
-      return Text("Credit Card Section"); // placeholder
+      return const CreditCardSection(); 
     default:
       return Container(); // default empty container or any default view
   }

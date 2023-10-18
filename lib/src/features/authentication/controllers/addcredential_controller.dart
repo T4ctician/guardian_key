@@ -8,10 +8,6 @@ class AddCredentialController extends GetxController {
   /// Repositories
   final _loginRepo = LoginRepository.instance;
 
-  @override
-  void onClose() {
-    super.onClose(); // Call super to ensure proper cleanup
-  }
 
   /// Add a new login
   Future<void> addLogin(CredentialModel login) async {

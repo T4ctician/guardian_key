@@ -11,8 +11,8 @@ const UPPER_ALPHA_END = 90;
 
 /// Generates a random integer where [from] <= [to].
 int randomBetween(int from, int to) {
-  if (from > to) throw new Exception('$from cannot be > $to');
-  var rand = new Random();
+  if (from > to) throw Exception('$from cannot be > $to');
+  var rand = Random();
   return ((to - from) * rand.nextDouble()).toInt() + from;
 }
 
@@ -20,8 +20,8 @@ int randomBetween(int from, int to) {
 /// between ascii [from] to [to].
 /// Defaults to characters of ascii '!' to '~'.
 String randomString(int length, {int from = ASCII_START, int to = ASCII_END}) {
-  return new String.fromCharCodes(
-      new List.generate(length, (index) => randomBetween(from, to)));
+  return String.fromCharCodes(
+      List.generate(length, (index) => randomBetween(from, to)));
 }
 
 /// Generates a random string of [length] with only numeric characters.
@@ -50,7 +50,7 @@ String randomAlphaNumeric(int length) {
 
 /// Merge [a] with [b] and scramble characters.
 String randomMerge(String a, String b) {
-  List<int> mergedCodeUnits = new List.from("$a$b".codeUnits);
+  List<int> mergedCodeUnits = List.from("$a$b".codeUnits);
   mergedCodeUnits.shuffle();
-  return new String.fromCharCodes(mergedCodeUnits);
+  return String.fromCharCodes(mergedCodeUnits);
 }

@@ -18,11 +18,15 @@ import 'package:guardian_key/src/services/note_service.dart';
     final TextEditingController noteTitleController = TextEditingController();
     final TextEditingController noteDetailController = TextEditingController();
     final NoteService noteService = NoteService(); // Added noteService
-    String selectedNoteTitle = ""; // Added selectedNoteTitle
+    String? selectedNoteTitle; 
+    String? userId;
+    String? selectedNoteId;
+
 
   @override
   void initState() {
       super.initState();
+      print('AddNoteState initState called');
       
       // Check if the note is provided
       if (widget.noteO != null) {
@@ -32,6 +36,19 @@ import 'package:guardian_key/src/services/note_service.dart';
       }
   }
   
+  @override
+  void dispose() {
+    noteTitleController.dispose();
+    noteDetailController.dispose();
+    super.dispose();
+  }
+
+  void updateSelectedNoteTitle(String? newTitle) {
+      setState(() {
+          selectedNoteTitle = newTitle;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -79,39 +96,27 @@ import 'package:guardian_key/src/services/note_service.dart';
                   child: 
                   ElevatedButton(
                     onPressed: () async {
-                      String noteTitle = noteTitleController.text.trim();
-                      String noteDetails = noteDetailController.text.trim();
+                        String noteTitle = noteTitleController.text.trim();
+                        String noteDetails = noteDetailController.text.trim();
 
-                      if (noteTitle.isEmpty) {
-                        Get.snackbar(
-                          'Error',
-                          'Note title cannot be empty.',
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
+                        if (noteTitle.isEmpty) {
+                            Get.snackbar('Error', 'Note title cannot be empty.', backgroundColor: Colors.red, colorText: Colors.white);
+                            return;
+                        }
+
+                        NoteModel note = NoteModel(
+                            id: widget.noteO?.id,
+                            noteTitle: noteTitle,
+                            noteDetails: noteDetails,
                         );
-                        return;
-                      }
 
-                      // Create a new NoteModel instance with the data from text fields
-                      NoteModel note = NoteModel(
-                        id: widget.noteO?.id,
-                        noteTitle: noteTitleController.text.trim(),
-                        noteDetails: noteDetailController.text.trim(),
-                      );
+                        if (widget.noteO != null) {
+                            AddNoteController.instance.updateNote(note);
+                        } else {
+                            AddNoteController.instance.addNote(note);
+                        }
 
-                      // Check if note already exists
-                      NoteModel? existingNote = await AddNoteController.instance.getNoteByTitle(note.noteTitle);
-
-                      if (existingNote == null) {
-                        // Call the addNote method to save the note
-                        AddNoteController.instance.addNote(note);
-                      } else {
-                        // Call the updateNote method to update the existing note
-                        AddNoteController.instance.updateNote(note);
-                      }
-
-                      // Close the modal
-                      Navigator.pop(context);
+                        Navigator.pop(context);
                     },
                     child: const Text(
                       "Ok Done",
@@ -120,7 +125,7 @@ import 'package:guardian_key/src/services/note_service.dart';
                   ),
                 ),
                 // Red Circle Delete Button
-                Container(
+                SizedBox(
                   height: screenHeight * 0.065,
                   width: screenHeight * 0.065,
                   child: ElevatedButton(
@@ -133,8 +138,8 @@ import 'package:guardian_key/src/services/note_service.dart';
                         Navigator.of(context).pop();
                       }
                     },
-                    child: Icon(Icons.delete, color: Colors.white),
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                 ),
               ],
@@ -202,88 +207,89 @@ import 'package:guardian_key/src/services/note_service.dart';
     );
   }
 
-
-
-  
-  Widget formHeading(String text) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+    Widget formHeading(String text) {
+      return Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 10),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget noteContainer(BuildContext context, NoteService noteService) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () {
-            showAddModal(context);
-          },
-          child: Container(
-            height: 55,
-            width: 120,
-            decoration: BoxDecoration(
-                color: Constants.logoBackground,
-                borderRadius: BorderRadius.circular(20)),
-            child: FractionallySizedBox(
-              heightFactor: 0.5,
-              widthFactor: 0.5,
-              child: Container(
-                child: const Row(
-                  children: [
-                    Icon(Icons.add),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "Add",
-                      style: TextStyle(fontSize: 14),
-                    )
-                  ],
+      double screenHeight = MediaQuery.of(context).size.height;
+      double screenWidth = MediaQuery.of(context).size.width;
+
+      return Row(
+        children: [
+          GestureDetector(
+            onTap: () {
+              showAddModal(context);
+            },
+            child: Container(
+              height: 55,
+              width: 120,
+              decoration: BoxDecoration(
+                  color: Constants.logoBackground,
+                  borderRadius: BorderRadius.circular(20)),
+              child: FractionallySizedBox(
+                heightFactor: 0.5,
+                widthFactor: 0.5,
+                child: Container(
+                  child: const Row(
+                    children: [
+                      Icon(Icons.add),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        "Add",
+                        style: TextStyle(fontSize: 14),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              height: 60,
-              width: screenWidth * 0.6,
-              child: FutureBuilder<List<String>>(
-                future: noteService.fetchNoteTitles(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    List<String> noteTitles = snapshot.data ?? [];
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: noteTitles.length,
-                      itemBuilder: (context, index) =>
-                          noteBlock(noteTitles[index], context),
-                    );
-                  }
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return SizedBox(
+                    height: 60,
+                    width: screenWidth * 0.6,
+                    child: FutureBuilder<List<NoteModel>>(
+                      future: noteService.fetchNoteData(),
+                      builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                          } else {
+                              List<NoteModel> notes = snapshot.data ?? [];
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: notes.length,
+                                  itemBuilder: (context, index) => noteBlock(notes[index], context, updateSelectedNoteTitle),
+                              );
+                          }
+                      },
+                  ),
+                  );
                 },
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
   }
 
   void showAddModal(BuildContext context, {NoteModel? noteO}) {
@@ -314,52 +320,40 @@ import 'package:guardian_key/src/services/note_service.dart';
   }
 
 
-  Widget noteBlock(String noteTitle, BuildContext context) {
-    return FutureBuilder<NoteModel?>(
-      future: noteService.getNoteByTitle(noteTitle),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final isSelected = noteTitle == selectedNoteTitle;
-          final selectedNote = snapshot.data;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedNoteTitle = selectedNote?.noteTitle ?? 'DefaultNoteTitle';
-              });
+  Widget noteBlock(NoteModel note, BuildContext context, void Function(String?) updateSelectedTitle) {
+    
+    final isSelected = note.id == widget.noteO?.id;
 
-              if (selectedNote != null) {
-                showAddModal(context, noteO: selectedNote);
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(6.0, 3, 6, 3),
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 200),
-                height: 50,
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue : Constants.logoBackground,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Text(
-                    noteTitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? Colors.white : Colors.black,
+    return GestureDetector(
+        onTap: () {
+            setState(() {
+                selectedNoteId = note.id;
+            });
+
+            showAddModal(context, noteO: note);
+        },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6.0, 3, 6, 3),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.blue : Constants.logoBackground,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                        note.noteTitle ?? "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        }
-      },
-    );
-  }
+            );
+          }
 
 
     Future<bool?> showConfirmationDialog(BuildContext context) {
@@ -367,8 +361,8 @@ import 'package:guardian_key/src/services/note_service.dart';
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Delete Confirmation'),
-            content: Text('Are you sure you want to delete the note?'),
+            title: const Text('Delete Confirmation'),
+            content: const Text('Are you sure you want to delete the note?'),
             actions: <Widget>[
               TextButton(
                 child: const Row(
@@ -398,6 +392,4 @@ import 'package:guardian_key/src/services/note_service.dart';
       );
     }
     
-
   }
-

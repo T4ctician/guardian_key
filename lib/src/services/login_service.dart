@@ -31,7 +31,7 @@ class LoginService {
       // Find the password with the matching website name
       final selectedPassword = data.firstWhere(
         (password) => password.websiteName == websiteName,
-        orElse: () => CredentialModel(  // Updated to CredentialModel
+        orElse: () => const CredentialModel(  // Updated to CredentialModel
           websiteName: '',
           userID: '',
           email: '',
@@ -43,7 +43,7 @@ class LoginService {
     } catch (e) {
       // Handle any errors here
       print('Error fetching password by website name: $e');
-      return CredentialModel(  // Updated to CredentialModel
+      return const CredentialModel(  // Updated to CredentialModel
         websiteName: '',
         userID: '',
         email: '',

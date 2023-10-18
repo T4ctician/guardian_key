@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const letterLowerCase = "abcdefghijklmnopqrstuvwxyz";
 const letterUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -17,8 +16,6 @@ Future<String> generatePassword({
     throw ArgumentError('Sum of uppercase, lowercase, and special characters should not exceed total length.');
   }
 
-  String chars = "$letterLowerCase$letterUpperCase$number$special";
-  
   String password = '';
   for (int i = 0; i < numUpperCase; i++) {
     password += letterUpperCase[Random.secure().nextInt(letterUpperCase.length)];
@@ -30,8 +27,9 @@ Future<String> generatePassword({
     password += special[Random.secure().nextInt(special.length)];
   }
 
+  // Only generate numbers for the remaining length
   for (int i = password.length; i < length; i++) {
-    password += chars[Random.secure().nextInt(chars.length)];
+    password += number[Random.secure().nextInt(number.length)];
   }
 
   List<String> passwordChars = password.split('');
@@ -39,4 +37,5 @@ Future<String> generatePassword({
   password = passwordChars.join('');
   return password;
 }
+
 

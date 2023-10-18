@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PasswordConfigScreen extends StatefulWidget {
+  const PasswordConfigScreen({super.key});
+
   @override
   _PasswordConfigScreenState createState() => _PasswordConfigScreenState();
 }
@@ -36,7 +38,7 @@ class _PasswordConfigScreenState extends State<PasswordConfigScreen> {
   if (_numUpperCase + _numLowerCase + _numSpecialChars > _passwordLength) {
     // Inform the user that the configuration is invalid.
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Invalid configuration! Sum of character counts exceeds total length.'),
         duration: Duration(seconds: 3),
       ),
@@ -50,24 +52,23 @@ class _PasswordConfigScreenState extends State<PasswordConfigScreen> {
       await prefs.setDouble('${userId}_numSpecialChars', _numSpecialChars);
     // Show a snackbar on the previous screen (ProfileScreen) after navigating back
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Password configuration saved!'),
         duration: Duration(seconds: 3),
       ),
     );
-
-    // Navigate back to the ProfileScreen
-    Navigator.pop(context);
+    // Navigate back to the ProfileScreen with a return value
+    Navigator.pop(context, true);
   }
   
 @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Password Configuration'),
+        title: const Text('Password Configuration'),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _saveSettings,  // Save settings when the save icon is clicked
           ),
         ],

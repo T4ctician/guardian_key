@@ -16,6 +16,8 @@ import 'package:guardian_key/src/repository/authentication_repository.dart';
 
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }

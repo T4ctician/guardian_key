@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:guardian_key/src/constants/colors.dart';
 import 'package:guardian_key/src/constants/sizes.dart';
@@ -9,21 +8,34 @@ import 'package:guardian_key/src/features/authentication/models/user_model.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 
-class ProfileFormScreen extends StatelessWidget {
-  const ProfileFormScreen({
-    Key? key,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.password,
-    required this.user,
-  }) : super(key: key);
+  class ProfileFormScreen extends StatefulWidget {
+    final TextEditingController firstName;
+    final TextEditingController lastName;
+    final TextEditingController email;
+    final TextEditingController password;
+    final UserModel user;
 
-  final TextEditingController firstName;
-  final TextEditingController lastName;
-  final TextEditingController email;
-  final TextEditingController password;
-  final UserModel user;
+    const ProfileFormScreen({
+      Key? key,
+      required this.firstName,
+      required this.lastName,
+      required this.email,
+      required this.password,
+      required this.user,
+    }) : super(key: key);
+
+    @override
+    _ProfileFormScreenState createState() => _ProfileFormScreenState();
+  }
+
+  class _ProfileFormScreenState extends State<ProfileFormScreen> {
+    bool isPasswordObscured = true;
+
+    void toggleObscure() {
+      setState(() {
+        isPasswordObscured = !isPasswordObscured;
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -33,23 +45,26 @@ class ProfileFormScreen extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
-            controller: firstName,
+            controller: widget.firstName,
             decoration: const InputDecoration(label: Text('First Name'), prefixIcon: Icon(LineAwesomeIcons.user)),
           ),
           const SizedBox(height: tFormHeight - 20),
           TextFormField(
-            controller: lastName,
+            controller: widget.lastName,
             decoration: const InputDecoration(label: Text('Last Name'), prefixIcon: Icon(LineAwesomeIcons.user)),
           ),
           const SizedBox(height: tFormHeight - 20),
           TextFormField(
-            controller: password,
-            obscureText: true,
+            controller: widget.password,
+            obscureText: isPasswordObscured,
             decoration: InputDecoration(
               label: const Text(tPassword),
               prefixIcon: const Icon(Icons.fingerprint),
-              suffixIcon: IconButton(icon: const Icon(LineAwesomeIcons.eye_slash), onPressed: () {}),
+              suffixIcon: IconButton(
+                  icon: Icon(isPasswordObscured ? LineAwesomeIcons.eye_slash : LineAwesomeIcons.eye),
+                  onPressed: toggleObscure,
             ),
+          ),
           ),
           const SizedBox(height: tFormHeight),
 
@@ -59,31 +74,31 @@ class ProfileFormScreen extends StatelessWidget {
             child: ElevatedButton(
           onPressed: () async {
             final userData = UserModel(
-              id: user.id,
-              email: email.text.trim(),
-              password: password.text.trim(),
-              firstName: firstName.text.trim(),
-              lastName: lastName.text.trim(),
-              dateOfBirth: user.dateOfBirth,
-              gender: user.gender,
+              id: widget.user.id,
+              email: widget.email.text.trim(),
+              password: widget.password.text.trim(),
+              firstName: widget.firstName.text.trim(),
+              lastName: widget.lastName.text.trim(),
+              dateOfBirth: widget.user.dateOfBirth,
+              gender: widget.user.gender,
             );
 
             // Update Firebase Auth Email and Password
             final currentUser = FirebaseAuth.instance.currentUser;
 
             if (currentUser != null) {
-              if (currentUser.email != email.text.trim()) {
+              if (currentUser.email != widget.email.text.trim()) {
                 try {
-                  await currentUser.updateEmail(email.text.trim());
+                  await currentUser.updateEmail(widget.email.text.trim());
                 } catch (e) {
                   print("Error updating email: $e");
                   // Handle errors: e.g. show a dialog with the error
                 }
               }
 
-              if (password.text.trim().isNotEmpty) {
+              if (widget.password.text.trim().isNotEmpty) {
                 try {
-                  await currentUser.updatePassword(password.text.trim());
+                  await currentUser.updatePassword(widget.password.text.trim());
                 } catch (e) {
                   print("Error updating password: $e");
                   // Handle errors: e.g. show a dialog with the error
@@ -110,15 +125,15 @@ class ProfileFormScreen extends StatelessWidget {
                 bool? shouldDelete = await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Delete User?'),
-                    content: Text('Are you sure you want to delete your profile? This action cannot be undone.'),
+                    title: const Text('Delete User?'),
+                    content: const Text('Are you sure you want to delete your profile? This action cannot be undone.'),
                     actions: [
                       TextButton(
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                         onPressed: () => Navigator.of(context).pop(false),
                       ),
                       TextButton(
-                        child: Text('Delete', style: TextStyle(color: Colors.red)),
+                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
                         onPressed: () => Navigator.of(context).pop(true),
                       ),
                     ],

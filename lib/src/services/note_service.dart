@@ -31,7 +31,7 @@ class NoteService {
       // Find the note with the matching title
       final selectedNote = data.firstWhere(
         (note) => note.noteTitle == title,
-        orElse: () => NoteModel(  // Updated to NoteModel
+        orElse: () => const NoteModel(  // Updated to NoteModel
           noteTitle: '',
           noteDetails: '',
         ), // Return an empty NoteModel object if no matching note is found
@@ -41,7 +41,7 @@ class NoteService {
     } catch (e) {
       // Handle any errors here
       print('Error fetching note by title: $e');
-      return NoteModel(  // Updated to NoteModel
+      return const NoteModel(  // Updated to NoteModel
         noteTitle: '',
         noteDetails: '',
       ); // Return an empty NoteModel object in case of an error

@@ -1,15 +1,13 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/Addboxes/Addnote.dart';
 import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
-import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
-import 'package:guardian_key/src/features/authentication/models/user_model.dart';
 import 'package:guardian_key/src/features/authentication/models/note_model.dart';
 import 'package:guardian_key/src/services/note_service.dart';
 
   class NotesSection extends StatefulWidget {
+  const NotesSection({super.key});
+
     @override
     _NotesSectionState createState() => _NotesSectionState();
   }
@@ -88,7 +86,7 @@ Widget build(BuildContext context) {
                 onTap: () {
                   Navigator.pop(context); // Close the modal
                 },
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.home, size: 30,),
                     SizedBox(width: 30), // Give some spacing between the icon and text
@@ -186,7 +184,7 @@ Widget build(BuildContext context) {
       onTap: () {
         bottomModal(context, noteO: note);  // Pass the note object
       },
-      child: Icon(Icons.edit, color: Colors.black),
+      child: const Icon(Icons.edit, color: Colors.black),
     );
   }
 

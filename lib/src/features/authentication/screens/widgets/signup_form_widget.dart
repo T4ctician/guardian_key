@@ -38,12 +38,22 @@ class SignUpFormWidget extends StatelessWidget {
                   label: Text(tLastName),
                   prefixIcon: Icon(LineAwesomeIcons.user)),
             ),
-            const SizedBox(height: tFormHeight - 20),
             TextFormField(
               controller: controller.email,
               decoration: const InputDecoration(
-                  label: Text(tEmail),
-                  prefixIcon: Icon(LineAwesomeIcons.envelope)),
+                label: Text(tEmail),
+                prefixIcon: Icon(LineAwesomeIcons.envelope)
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter an email';
+                } else if (!RegExp(
+                  r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+                ).hasMatch(value)) {
+                  return 'Please enter a valid email';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
@@ -143,8 +153,8 @@ class SignUpFormWidget extends StatelessWidget {
                 children: [
                   // This icon will only be displayed if the terms are accepted
                   if (controller.termsAccepted.value)
-                    Icon(Icons.check_circle, color: Colors.blue),
-                  SizedBox(width: 8), // Some spacing between the icon and text
+                    const Icon(Icons.check_circle, color: Colors.blue),
+                  const SizedBox(width: 8), // Some spacing between the icon and text
                   // The rest of your RichText widget for the terms
                   RichText(
                     text: TextSpan(

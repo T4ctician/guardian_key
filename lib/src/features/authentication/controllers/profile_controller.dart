@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:guardian_key/src/features/authentication/models/creditcard_model.dart';
+import 'package:guardian_key/src/features/authentication/models/note_model.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
 import 'package:guardian_key/src/features/authentication/models/credential_model.dart'; 
 import 'package:guardian_key/src/repository/authentication_repository.dart';
+import 'package:guardian_key/src/repository/creditcard_repository.dart';
 import 'package:guardian_key/src/repository/login_repository.dart';
+import 'package:guardian_key/src/repository/note_repository.dart';
 import 'package:guardian_key/src/repository/user_repository.dart';
 
 
@@ -55,16 +59,16 @@ Future<void> updateRecord(UserModel user) async {
     await showDialog(
       context: Get.context!,  // assuming you have GetX setup
       builder: (context) => AlertDialog(
-        title: Text('Password Confirmation'),
+        title: const Text('Password Confirmation'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Please enter your password to confirm profile update.'),
-            SizedBox(height: 20),
+            const Text('Please enter your password to confirm profile update.'),
+            const SizedBox(height: 20),
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
               ),
@@ -73,11 +77,11 @@ Future<void> updateRecord(UserModel user) async {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(),
           ),
           TextButton(
-            child: Text('Confirm'),
+            child: const Text('Confirm'),
             onPressed: () => Navigator.of(context).pop(passwordController.text),
           ),
         ],
@@ -126,16 +130,16 @@ Future<void> deleteUser() async {
     await showDialog(
       context: Get.context!,  // assuming you have GetX setup
       builder: (context) => AlertDialog(
-        title: Text('Password Confirmation'),
+        title: const Text('Password Confirmation'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Please enter your password to confirm user deletion.'),
-            SizedBox(height: 20),
+            const Text('Please enter your password to confirm user deletion.'),
+            const SizedBox(height: 20),
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
               ),
@@ -144,11 +148,11 @@ Future<void> deleteUser() async {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(),
           ),
           TextButton(
-            child: Text('Confirm'),
+            child: const Text('Confirm'),
             onPressed: () => Navigator.of(context).pop(passwordController.text),
           ),
         ],
@@ -157,14 +161,33 @@ Future<void> deleteUser() async {
 
     String password = passwordController.text;
 
+    
     // Re-authenticate the user
-    AuthCredential credential = EmailAuthProvider.credential(email: currentUser.email!, password: password);
-    await currentUser.reauthenticateWithCredential(credential);
+        // Define a list of repositories for each subcollection
+    List<GetxController> subcollections = [
+      LoginRepository.instance,
+      CreditCardRepository.instance,
+      NoteRepository.instance
+    ];
 
-    // Delete all Credential records associated with the user
-    List<CredentialModel> allLogins = await LoginRepository.instance.getAllLogins();
-    for (CredentialModel login in allLogins) {
-      await LoginRepository.instance.deleteLogin(login.id!);
+    // Iterate over each repository and call the delete methods
+    for (var repo in subcollections) {
+      if (repo is LoginRepository) {
+        List<CredentialModel> allLogins = await repo.getAllLogins();
+        for (CredentialModel login in allLogins) {
+          await repo.deleteLogin(login.id!);
+        }
+      } else if (repo is CreditCardRepository) {
+        List<CreditCardModel> allCreditCards = await repo.getAllCreditCards();
+        for (CreditCardModel card in allCreditCards) {
+          await repo.deleteCreditCard(card.id!);
+        }
+      } else if (repo is NoteRepository) {
+        List<NoteModel> allNotes = await repo.getAllNotes();
+        for (NoteModel note in allNotes) {
+          await repo.deleteNote(note.id!);
+        }
+      }
     }
 
     // Delete the user from Firestore
@@ -182,7 +205,5 @@ Future<void> deleteUser() async {
     Get.snackbar("Error", "Error while deleting user. Please try again later.");
   }
 }
-
-
 
 }

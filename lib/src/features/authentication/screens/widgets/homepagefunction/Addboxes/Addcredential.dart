@@ -64,11 +64,15 @@ class AddModalState extends State<AddModal> {
     });
   }
 
-  @override
+   @override
   void dispose() {
-    passwordController.dispose(); // Dispose the controller when the widget is removed
+    passwordController.dispose(); 
+    websiteNameController.dispose();
+    userIDController.dispose();
+    emailController.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +193,7 @@ class AddModalState extends State<AddModal> {
                         ),
                     ),
                 // Red Circle Delete Button
-                Container(
+                SizedBox(
                   height: screenHeight * 0.065,
                   width: screenHeight * 0.065,
                   child: ElevatedButton(
@@ -203,7 +207,7 @@ class AddModalState extends State<AddModal> {
                         Navigator.of(context).pop();
                       }
                     },
-                    child: Icon(Icons.delete, color: Colors.white),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                 ),
               ],
@@ -272,7 +276,7 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
               if (hintText == "Enter Password" && isWeak) { // Add the hintText check here
                 return TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: 1.0),
-                  duration: Duration(seconds: 1),
+                  duration: const Duration(seconds: 1),
                   onEnd: () {
                     colorNotifier.value = colorNotifier.value == Colors.orange ? Colors.red : Colors.orange;
                   },
@@ -303,13 +307,18 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
           Padding(
             padding: const EdgeInsets.only(left: 10.0, top: 5.0),
             child: InkWell(
-              onTap: () {
-                // Navigate to Password Configuration Screen
-                Get.to(() => PasswordConfigScreen());
-              },
+                onTap: () async {
+                  // The 'result' will contain the value passed back from Navigator.pop in PasswordConfigScreen
+                  bool? result = await Get.to(() => const PasswordConfigScreen());
+                  
+                  // If 'result' is true, the settings were saved, so you can reload them.
+                  if (result == true) {
+                    _fetchPasswordSettings();
+                  }
+                },
               child: Container(
                 padding: const EdgeInsets.only(left: 10.0),  // Add padding here
-                child: Text('Password \nConfiguration', 
+                child: const Text('Password \nConfiguration', 
                             style: TextStyle(color: Colors.blue)),
               ),
             ),
@@ -331,7 +340,7 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
                   weakPasswordAlertNotifier.value = strength == PasswordStrength.alreadyExposed || strength == PasswordStrength.weak;
                 });
               },
-              child: Text('Generate \nPassword', style: TextStyle(color: Colors.blue)),
+              child: const Text('Generate \nPassword', style: TextStyle(color: Colors.blue)),
             ),
           ),
         ],
@@ -408,7 +417,7 @@ Widget websiteContainer(BuildContext context, LoginService loginService) {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // Loading indicator while fetching data
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   // Handle error
                   return Text('Error: ${snapshot.error}');
@@ -467,7 +476,7 @@ void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         // Loading indicator while fetching data
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       } else if (snapshot.hasError) {
         // Handle error
         return Text('Error: ${snapshot.error}');
@@ -487,7 +496,7 @@ void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(6.0, 3, 6, 3),
             child: Container(
-              constraints: BoxConstraints(maxWidth: 200),
+              constraints: const BoxConstraints(maxWidth: 200),
               height: 50,
               decoration: BoxDecoration(
                 color: isSelected ? Colors.blue : Constants.logoBackground,
@@ -516,8 +525,8 @@ void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Confirmation'),
-          content: Text('Are you sure you want to delete the logins?'),
+          title: const Text('Delete Confirmation'),
+          content: const Text('Are you sure you want to delete the logins?'),
           actions: <Widget>[
             TextButton(
               child: const Row(

@@ -10,6 +10,8 @@ import 'package:guardian_key/src/services/login_service.dart';
 import 'package:password_strength_checker/password_strength_checker.dart';
 
 class CredentialsSection extends StatefulWidget {
+  const CredentialsSection({super.key});
+
   @override
   _CredentialsSectionState createState() => _CredentialsSectionState();
 }
@@ -89,7 +91,7 @@ class _CredentialsSectionState extends State<CredentialsSection> {
                   onTap: () {
                     Navigator.pop(context); // Close the modal
                   },
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(Icons.home, size: 30,),
                       SizedBox(width: 30), // Give some spacing between the icon and text
@@ -188,7 +190,7 @@ class _CredentialsSectionState extends State<CredentialsSection> {
           Expanded(
             flex: 1,
             child: weakPasswordAlertNotifier.value
-                ? Align(
+                ? const Align(
                     alignment: Alignment.centerRight,
                     child: Icon(Icons.warning, color: Colors.red),
                   )
@@ -225,7 +227,7 @@ Widget EditIconButton(CredentialModel password, BuildContext context){
     onTap: () {
       bottomModal(context, passwordO: password);  // Pass the password object
     },
-    child: Icon(Icons.edit, color: Colors.black),
+    child: const Icon(Icons.edit, color: Colors.black),
   );
 }
 

@@ -8,10 +8,6 @@ class AddNoteController extends GetxController {
   /// Repositories
   final _noteRepo = NoteRepository.instance;
 
-  @override
-  void onClose() {
-    super.onClose(); // Call super to ensure proper cleanup
-  }
 
   /// Add a new note
   Future<void> addNote(NoteModel note) async {
