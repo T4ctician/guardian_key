@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:guardian_key/src/features/authentication/controllers/login_controller.dart';
+import 'package:guardian_key/src/features/authentication/screens/widgets/forget_password.dart';
 import '../../../../constants/sizes.dart';
 import '../../../../constants/text_strings.dart';
 
@@ -63,6 +64,15 @@ class LoginFormWidget extends StatelessWidget {
                 ),
               ),
             ),
+            Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Get.to(() => ForgotPasswordScreen()); // Navigate to the ForgetPasswordScreen when clicked
+                  },
+                  child: Text("Forget Password", style: TextStyle(color: Colors.blue)),
+                ),
+              ),
               const SizedBox(height: tFormHeight - 20),
 
               /// -- LOGIN BTN

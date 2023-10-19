@@ -41,7 +41,7 @@ class ProfileController extends GetxController {
   Future<List<UserModel>> getAllUsers() async => await _userRepo.allUsers();
 
   /// Update User Data
-Future<void> updateRecord(UserModel user) async {
+Future<void> updateRecord(UserModel user,) async {
   try {
     // Get the current user
     User? currentUser = _authRepo.getCurrentUser();
@@ -94,6 +94,25 @@ Future<void> updateRecord(UserModel user) async {
     AuthCredential credential = EmailAuthProvider.credential(email: currentUser.email!, password: password);
     await currentUser.reauthenticateWithCredential(credential);
 
+            if (currentUser != null) {
+              if (currentUser.email != user.email.trim()) {
+                try {
+                  await currentUser.updateEmail(user.email.trim());
+                } catch (e) {
+                  print("Error updating email: $e");
+                  // Handle errors: e.g. show a dialog with the error
+                }
+              }
+
+              if (user.password.trim().isNotEmpty) {
+                try {
+                  await currentUser.updatePassword(user.password.trim());
+                } catch (e) {
+                  print("Error updating password: $e");
+                  // Handle errors: e.g. show a dialog with the error
+                }
+              }
+            }
     // Update user record in Firestore
     await _userRepo.updateUserRecord(user);
     

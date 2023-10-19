@@ -83,6 +83,7 @@ flutter:
      - assets/onboarding_screen/
      - assets/welcome/
      - assets/profile/male_avatar.jpg
+     - assets/forget_password/forget-password.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

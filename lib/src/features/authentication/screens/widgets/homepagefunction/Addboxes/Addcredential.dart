@@ -8,7 +8,7 @@ import 'package:password_strength_checker/password_strength_checker.dart';
 import 'package:guardian_key/src/features/authentication/models/credential_model.dart'; 
 import 'package:guardian_key/src/features/authentication/controllers/addcredential_controller.dart';
 import 'package:guardian_key/src/services/login_service.dart';
-import 'package:guardian_key/src/features/authentication/screens/profile/passwordconfig.dart';
+import 'package:guardian_key/src/features/authentication/screens/profile/password_configuration/passwordconfig.dart';
 
 
 

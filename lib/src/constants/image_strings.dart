@@ -10,7 +10,7 @@ const String tOnBoardingImage3 = "assets/onboarding_screen/on-boarding-image-3.p
 const String tWelcomeScreenImage = "assets/welcome/welcome.png";
 
 // -- Forget Password Images
-const String tForgetPasswordImage = "assets/images/forget_password/forget-password.png";
+const String tForgetPasswordImage = "assets/forget_password/forget-password.png";
 
 
 // -- Homepage Images

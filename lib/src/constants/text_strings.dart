@@ -28,7 +28,7 @@ const String tWelcomeSubTitle = "Your digital fortress awaits. Whether you're he
 
 
 // -- Login Screen Text
-const String tLoginTitle = "Welcome Back,";
+const String tLoginTitle = "Welcome Back";
 const String tLoginSubTitle = "Your digital world is at your fingertips";
 const String tRememberMe = "Remember Me?";
 const String tDontHaveAnAccount = "Don't have an Account? ";
@@ -41,10 +41,9 @@ const String tAlreadyHaveAnAccount = "Already have an Account? ";
 
 
 // -- Forget Password Text
-const String tForgetPasswordTitle = "Make Selection!";
+const String tForgetPasswordTitle = "Enter your email address to receive a password reset link.";
 const String tForgetPasswordSubTitle = "Select one of the options given below to reset your password.";
-const String tResetViaEMail = "Reset via Mail Verification";
-const String tResetViaPhone = "Reset via Phone Verification";
+
 
 // -- Forget Password Via E-Mail - Text
 const String tForgetMailSubTitle = "Enter your registered E-Mail to receive OTP";

@@ -12,7 +12,6 @@ class SignUpFooterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Google Sign-In Button and its related components are removed
         const SizedBox(height: 20.0),
         TextButton(
           onPressed: () => Get.off(() => const LoginScreen()),
@@ -21,7 +20,7 @@ class SignUpFooterWidget extends StatelessWidget {
               text: tAlreadyHaveAnAccount,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            TextSpan(text: tLogin.toUpperCase())
+            TextSpan(text: tLogin)
           ])),
         )
       ],

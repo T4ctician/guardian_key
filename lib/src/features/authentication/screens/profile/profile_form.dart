@@ -38,6 +38,13 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
     }
 
   @override
+  void dispose() {
+    widget.password.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProfileController());
 
@@ -58,7 +65,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
             controller: widget.password,
             obscureText: isPasswordObscured,
             decoration: InputDecoration(
-              label: const Text(tPassword),
+              label: const Text("New Password"),
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
                   icon: Icon(isPasswordObscured ? LineAwesomeIcons.eye_slash : LineAwesomeIcons.eye),
@@ -85,26 +92,6 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
 
             // Update Firebase Auth Email and Password
             final currentUser = FirebaseAuth.instance.currentUser;
-
-            if (currentUser != null) {
-              if (currentUser.email != widget.email.text.trim()) {
-                try {
-                  await currentUser.updateEmail(widget.email.text.trim());
-                } catch (e) {
-                  print("Error updating email: $e");
-                  // Handle errors: e.g. show a dialog with the error
-                }
-              }
-
-              if (widget.password.text.trim().isNotEmpty) {
-                try {
-                  await currentUser.updatePassword(widget.password.text.trim());
-                } catch (e) {
-                  print("Error updating password: $e");
-                  // Handle errors: e.g. show a dialog with the error
-                }
-              }
-            }
 
             await controller.updateRecord(userData);
           },
