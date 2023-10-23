@@ -14,7 +14,7 @@ class SignUpFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignUpController());
+    final controller = Get.find<SignUpController>();
     final formKey = GlobalKey<FormState>();
 
   return Container(
@@ -79,7 +79,7 @@ class SignUpFormWidget extends StatelessWidget {
 
             const SizedBox(height: tFormHeight - 20),
             DropdownButtonFormField(
-              items: ['Male', 'Female', 'Other']
+              items: ['Male', 'Female', 'Prefer not to say']
                   .map((label) => DropdownMenuItem(
                         value: label,
                         child: Text(label),
@@ -149,56 +149,51 @@ class SignUpFormWidget extends StatelessWidget {
             ),
             const SizedBox(height: tFormHeight - 20),
             CheckboxListTile(
-              title: Row(
-                children: [
-                  // This icon will only be displayed if the terms are accepted
-                  if (controller.termsAccepted.value)
-                    const Icon(Icons.check_circle, color: Colors.blue),
-                  const SizedBox(width: 8), // Some spacing between the icon and text
-                  // The rest of your RichText widget for the terms
-                  RichText(
-                    text: TextSpan(
-                      style: DefaultTextStyle.of(context).style, // this is the default text style
-                      children: <TextSpan>[
-                        const TextSpan(text: 'I accept the '),
-                        TextSpan(
-                          text: 'Terms and Conditions',
-                          style: const TextStyle(
-                            color: Colors.blue, // Text color for Terms and Conditions
-                            decoration: TextDecoration.underline, // Underline decoration
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('Terms and Conditions'),
-                                    content: const SingleChildScrollView(
-                                      child: Text(termsandcondition),
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Close'),
-                                      ),
-                                    ],
-                                  );
-                                },
+              title: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style, // this is the default text style
+                  children: <TextSpan>[
+                    const TextSpan(text: 'I accept the '),
+                    TextSpan(
+                      text: 'Terms and Conditions',
+                      style: const TextStyle(
+                        color: Colors.blue, // Text color for Terms and Conditions
+                        decoration: TextDecoration.underline, // Underline decoration
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Terms and Conditions'),
+                                content: const SingleChildScrollView(
+                                  child: Text(termsandcondition),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Close'),
+                                  ),
+                                ],
                               );
                             },
-                        ),
-                      ],
+                          );
+                        },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               value: controller.termsAccepted.value,
-              onChanged: (newValue) => controller.termsAccepted.value = newValue!,
+              
+              onChanged: (newValue) {
+                controller.termsAccepted.value = !controller.termsAccepted.value;
+              },
               controlAffinity: ListTileControlAffinity.leading,  // Places the checkbox at the start
             ),
+
             Obx(
               () => SizedBox(
                 width: double.infinity,

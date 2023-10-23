@@ -134,16 +134,21 @@ Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20.0, 10, 20.0, 10),
       child: Container(
+        height: 100,  // Assign a fixed height
         decoration: BoxDecoration(
           color: highlight ? Colors.yellow.withOpacity(0.2) : null,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,  // Align items to the start (top)
           children: [
             // Edit Icon
             Expanded(
               flex: 1,
-              child: EditIconButton(noteO, context),  // Use the EditIconButton widget here
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),  // Padding to move the icon slightly down
+                child: EditIconButton(noteO, context),
+              ),
             ),
             // Note title and description
             Expanded(
@@ -160,6 +165,7 @@ Widget build(BuildContext context) {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis if the title overflows
                     ),
                     Text(
                       noteO.noteDetails,
@@ -168,6 +174,8 @@ Widget build(BuildContext context) {
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
+                      maxLines: 3,  // Limit to 3 lines
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis if the details overflows
                     ),
                   ],
                 ),
@@ -178,6 +186,8 @@ Widget build(BuildContext context) {
       ),
     );
   }
+
+
 
   Widget EditIconButton(NoteModel note, BuildContext context){
     return InkWell(

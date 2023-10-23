@@ -52,6 +52,7 @@ Future<void> updateRecord(UserModel user,) async {
       return;
     }
 
+    
     // Create a controller for the password input
     TextEditingController passwordController = TextEditingController();
 

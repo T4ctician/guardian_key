@@ -26,7 +26,7 @@ class SignUpController extends GetxController {
   /// Loader
   final isLoading = false.obs;
 
-  final termsAccepted = false.obs; // This will handle the state of the checkbox.
+  RxBool termsAccepted = false.obs; // This will handle the state of the checkbox.
 
   // Define a getter for registrationSuccessful
   final RxBool _registrationSuccessful = false.obs;

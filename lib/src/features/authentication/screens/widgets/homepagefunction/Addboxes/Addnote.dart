@@ -154,58 +154,92 @@ import 'package:guardian_key/src/services/note_service.dart';
   }
 
   Widget formTextField(String hintText, IconData icon, {TextEditingController? controller}) {
-    int maxLines = 1;
-    Widget? prefixIcon;
+      int maxLines = 1;
+      Widget? prefixIcon;
+      bool isScrollable = false;
 
-    if (hintText == "Enter Note Details") {
-      maxLines = 10;  // Setting maxLines to 7 for the "Enter Note Details" field
-    } else {
-      prefixIcon = Padding(
-        padding: const EdgeInsets.fromLTRB(20, 5, 5, 5),
-        child: Icon(
-          icon,
-          color: Constants.searchGrey,
-        ),
-      );
-    }
+      if (hintText == "Enter Note Details") {
+        maxLines = 10;  // Setting maxLines to 7 for the "Enter Note Details" field
+        isScrollable = true;  // Make the note details scrollable
+      } else {
+        prefixIcon = Padding(
+          padding: const EdgeInsets.fromLTRB(20, 5, 5, 5),
+          child: Icon(
+            icon,
+            color: Constants.searchGrey,
+          ),
+        );
+      }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextFormField(
-                  controller: controller,
-                  maxLines: maxLines,  // Use maxLines here
-                  decoration: InputDecoration(
-                    prefixIcon: prefixIcon,  // Use the prefixIcon variable here
-                    filled: true,
-                    contentPadding: const EdgeInsets.all(16),
-                    hintText: hintText,
-                    hintStyle: TextStyle(
-                      color: Constants.searchGrey, fontWeight: FontWeight.w500
-                    ),
-                    fillColor: const Color.fromARGB(247, 232, 235, 237),
-                    border: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        width: 0,
-                        style: BorderStyle.none,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: isScrollable 
+                  ? SingleChildScrollView(  // Wrap TextFormField with SingleChildScrollView for note details
+                      child: TextFormField(
+                        controller: controller,
+                        maxLines: maxLines,  // Use maxLines here
+                        maxLength: hintText == "Enter Note Details" ? 3000 : null, // set maxLength for note details
+                        buildCounter: hintText == "Enter Note Details"
+                          ? (BuildContext context, { int? currentLength, int? maxLength, bool? isFocused }) => 
+                              Text('$currentLength/$maxLength') 
+                          : null, 
+                        decoration: InputDecoration(
+                          prefixIcon: prefixIcon,  // Use the prefixIcon variable here
+                          filled: true,
+                          contentPadding: const EdgeInsets.all(16),
+                          hintText: hintText,
+                          hintStyle: TextStyle(
+                            color: Constants.searchGrey, fontWeight: FontWeight.w500
+                          ),
+                          fillColor: const Color.fromARGB(247, 232, 235, 237),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                            borderRadius: BorderRadius.circular(20)
+                          ),
+                        ),
+                        style: const TextStyle(),
                       ),
-                      borderRadius: BorderRadius.circular(20)
+                    )
+                  : TextFormField(  // If not note details, then just the TextFormField
+                      controller: controller,
+                      maxLines: maxLines,
+                      decoration: InputDecoration(
+                        prefixIcon: prefixIcon,
+                        filled: true,
+                        contentPadding: const EdgeInsets.all(16),
+                        hintText: hintText,
+                        hintStyle: TextStyle(
+                          color: Constants.searchGrey, fontWeight: FontWeight.w500
+                        ),
+                        fillColor: const Color.fromARGB(247, 232, 235, 237),
+                        border: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                      ),
+                      style: const TextStyle(),
                     ),
-                  ),
-                  style: const TextStyle(),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
   }
+
+
 
     Widget formHeading(String text) {
       return Align(

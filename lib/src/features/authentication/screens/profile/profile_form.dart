@@ -30,12 +30,20 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
 
   class _ProfileFormScreenState extends State<ProfileFormScreen> {
     bool isPasswordObscured = true;
+    final _formKey = GlobalKey<FormState>();
+
 
     void toggleObscure() {
       setState(() {
         isPasswordObscured = !isPasswordObscured;
       });
     }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.password.clear();  // Clear the password text field controller
+  }
 
   @override
   void dispose() {
@@ -49,6 +57,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
     final controller = Get.put(ProfileController());
 
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
@@ -66,12 +75,43 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
             obscureText: isPasswordObscured,
             decoration: InputDecoration(
               label: const Text("New Password"),
+              hintText: "Enter new password",
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
                   icon: Icon(isPasswordObscured ? LineAwesomeIcons.eye_slash : LineAwesomeIcons.eye),
                   onPressed: toggleObscure,
             ),
           ),
+            validator: (value) {
+                print("Validating password...");
+                if (value == null || value.isEmpty) {
+                    return "Enter Password";
+                } 
+
+                List<String> errors = [];
+
+                if (value.length < 8) {
+                    errors.add("Use 8 or more characters");
+                }
+                if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                    errors.add("Use at least one uppercase letter");
+                }
+                if (!RegExp(r'[a-z]').hasMatch(value)) {
+                    errors.add("Use at least one lowercase letter");
+                }
+                if (!RegExp(r'[0-9]').hasMatch(value)) {
+                    errors.add("Use at least one number");
+                }
+                if (!RegExp(r'[!@#$&]').hasMatch(value)) {
+                    errors.add(r"Use one special char !@#$&");
+                }
+
+                if (errors.isNotEmpty) {
+                    return errors.join('\n');
+                }
+                return null;
+            },
+
           ),
           const SizedBox(height: tFormHeight),
 
@@ -79,22 +119,24 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-          onPressed: () async {
-            final userData = UserModel(
-              id: widget.user.id,
-              email: widget.email.text.trim(),
-              password: widget.password.text.trim(),
-              firstName: widget.firstName.text.trim(),
-              lastName: widget.lastName.text.trim(),
-              dateOfBirth: widget.user.dateOfBirth,
-              gender: widget.user.gender,
-            );
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  final userData = UserModel(
+                    id: widget.user.id,
+                    email: widget.email.text.trim(),
+                    password: widget.password.text.trim(),
+                    firstName: widget.firstName.text.trim(),
+                    lastName: widget.lastName.text.trim(),
+                    dateOfBirth: widget.user.dateOfBirth,
+                    gender: widget.user.gender,
+                  );
 
-            // Update Firebase Auth Email and Password
-            final currentUser = FirebaseAuth.instance.currentUser;
+                  // Update Firebase Auth Email and Password
+                  final currentUser = FirebaseAuth.instance.currentUser;
 
-            await controller.updateRecord(userData);
-          },
+                  await controller.updateRecord(userData);
+                }
+              },
 
               style: ElevatedButton.styleFrom(
                   backgroundColor: darkBlue, side: BorderSide.none, shape: const StadiumBorder()),
