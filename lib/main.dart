@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/repository/authentication_repository.dart';
@@ -8,14 +7,12 @@ import 'firebase_options.dart';
 import 'package:guardian_key/src/utils/app_bindings.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
   /// Before running App - Initialize Firebase and after initialization, Call
   /// Authentication Repository so that It can check which screen to show.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Get.put(AuthenticationRepository());
   runApp(MyApp());
-  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatefulWidget {

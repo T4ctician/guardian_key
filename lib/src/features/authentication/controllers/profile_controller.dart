@@ -301,8 +301,8 @@ Future<void> deleteUser() async {
           bool isBiometricAuthEnabled = await _authenticationService.isBiometricAuthEnabled();
           if (isBiometricAuthEnabled &&
               _lastBackgroundedTime != null &&
-              currentTime.difference(_lastBackgroundedTime!).inMinutes >= 2 &&
-              ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 2) &&
+              currentTime.difference(_lastBackgroundedTime!).inMinutes >= 5 &&
+              ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 10) &&
               !_isAuthenticating) {
               _authenticateUser();
           }
