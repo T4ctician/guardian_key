@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian_key/src/features/authentication/models/creditcard_model.dart';
@@ -10,15 +11,40 @@ import 'package:guardian_key/src/repository/creditcard_repository.dart';
 import 'package:guardian_key/src/repository/login_repository.dart';
 import 'package:guardian_key/src/repository/note_repository.dart';
 import 'package:guardian_key/src/repository/user_repository.dart';
+import 'package:guardian_key/src/services/authentication_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-class ProfileController extends GetxController {
+class ProfileController extends GetxController with WidgetsBindingObserver {
   static ProfileController get instance => Get.find();
 
   /// Repositories
   final _authRepo = AuthenticationRepository.instance;
   final _userRepo = UserRepository.instance;
+  final AuthenticationService _authenticationService = AuthenticationService();
+  bool _isAuthenticating = false;
+  bool _isFirstLaunch = true;
+  DateTime? _lastBackgroundedTime;
+  DateTime? _lastAuthenticatedTime;
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance?.addObserver(this);
+    _getLastBackgroundedTime();
+    _authenticationService.isBiometricAuthEnabled().then((isEnabled) {
+      if (isEnabled) {
+        _authenticateUser();
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.onClose();
+  }
 
   /// Get User Email and pass to UserRepository to fetch user record.
   getUserData() {
@@ -52,7 +78,6 @@ Future<void> updateRecord(UserModel user,) async {
       return;
     }
 
-    
     // Create a controller for the password input
     TextEditingController passwordController = TextEditingController();
 
@@ -226,4 +251,74 @@ Future<void> deleteUser() async {
   }
 }
 
+  Future<void> setAutoFill(bool isEnabled) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('autoFillEnabled', isEnabled);
+  }
+
+  Future<bool> isAutoFillEnabled() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('autoFillEnabled') ?? false;
+  }
+
+  // Use this method when you want to enable biometric authentication
+  Future<bool> enableBiometricAuth() async {
+    return await _authenticationService.enableBiometricAuth();
+  }
+
+  // Use this method when you want to disable biometric authentication
+  Future<bool> disableBiometricAuth() async {
+    return await _authenticationService.disableBiometricAuth();
+  }
+
+  // Use this method when you want to check if biometric auth is enabled
+  Future<bool> isBiometricAuthEnabled() async {
+    return await _authenticationService.isBiometricAuthEnabled();
+  }
+
+    Future<void> _getLastBackgroundedTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? storedTimeMillis = prefs.getInt('lastBackgroundedTime');
+    if (storedTimeMillis != null) {
+      _lastBackgroundedTime = DateTime.fromMillisecondsSinceEpoch(storedTimeMillis);
+    }
+  }
+
+  Future<void> _setLastBackgroundedTime(DateTime time) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('lastBackgroundedTime', time.millisecondsSinceEpoch);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+      super.didChangeAppLifecycleState(state);
+
+      if (state == AppLifecycleState.paused) {
+          _lastBackgroundedTime = DateTime.now();
+          await _setLastBackgroundedTime(_lastBackgroundedTime!);
+      } else if (state == AppLifecycleState.resumed && !_isFirstLaunch) {
+          final currentTime = DateTime.now();
+          bool isBiometricAuthEnabled = await _authenticationService.isBiometricAuthEnabled();
+          if (isBiometricAuthEnabled &&
+              _lastBackgroundedTime != null &&
+              currentTime.difference(_lastBackgroundedTime!).inMinutes >= 2 &&
+              ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 2) &&
+              !_isAuthenticating) {
+              _authenticateUser();
+          }
+      }
+      _isFirstLaunch = false;
+  }
+
+  Future<void> _authenticateUser() async {
+    _isAuthenticating = true;
+    bool isAuthenticated = await _authenticationService.authenticateWithBiometrics();
+    if (isAuthenticated) {
+      _lastAuthenticatedTime = DateTime.now();  // Set the last authenticated time
+    } else {
+      // Exit the app if authentication fails
+      WidgetsBinding.instance.addPostFrameCallback((_) => SystemNavigator.pop());
+    }
+    _isAuthenticating = false;
+  }
 }

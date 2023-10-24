@@ -12,7 +12,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
         // Optionally, you can add a back or close button here.
       ),
       body: Padding(
@@ -24,17 +24,17 @@ class ForgotPasswordScreen extends StatelessWidget {
               Image.asset('assets/forget_password/forget-password.png', width:250, height:250),
 
               const SizedBox(height: 10.0),
-              Text('Forget Password', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const Text('Forget Password', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
 
               const SizedBox(height: 30.0),
-              Text('Enter your email address to receive a password reset link.'),
-              SizedBox(height: 20),
+              const Text('Enter your email address to receive a password reset link.'),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'E-mail',  // Added label
-                  prefixIcon: Icon(Icons.email),  // Added email icon
+                  prefixIcon: const Icon(Icons.email),  // Added email icon
                   hintText: 'example@domain.com',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),  // Added rounded corners
@@ -46,7 +46,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => controller.sendResetEmail(_emailController.text.trim()),
-                  child: Text('Send Reset Link'),
+                  child: const Text('Send Reset Link'),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),  // Rounded corners for button
@@ -62,7 +62,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     text: tAlreadyHaveAnAccount,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  TextSpan(text: tLogin)
+                  const TextSpan(text: tLogin)
                 ])),
               ),
             ],

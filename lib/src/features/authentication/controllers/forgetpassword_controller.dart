@@ -7,13 +7,21 @@ class ForgotPasswordController extends GetxController {
 
   Future<void> sendResetEmail(String email) async {
     try {
+      // Fetch sign-in methods for the given email
+      List<String> signInMethods = await _firebaseAuth.fetchSignInMethodsForEmail(email);
+
+      // If the list is empty, it means the user is not registered
+      if (signInMethods.isEmpty) {
+        Get.snackbar('Error', 'User not found', snackPosition: SnackPosition.BOTTOM);
+        return;
+      }
+
+      // If the user is registered, proceed with sending the password reset email
       await _firebaseAuth.sendPasswordResetEmail(email: email);
-      
-      // Display a custom dialog
       _showCustomDialog();
 
     } catch (e) {
-      // Display an error message
+      print(e);
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }

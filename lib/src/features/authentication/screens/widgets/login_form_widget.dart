@@ -70,7 +70,7 @@ class LoginFormWidget extends StatelessWidget {
                   onPressed: () {
                     Get.to(() => ForgotPasswordScreen()); // Navigate to the ForgetPasswordScreen when clicked
                   },
-                  child: Text("Forget Password", style: TextStyle(color: Colors.blue)),
+                  child: const Text("Forget Password", style: TextStyle(color: Colors.blue)),
                 ),
               ),
               const SizedBox(height: tFormHeight - 20),

@@ -10,8 +10,6 @@ import 'package:guardian_key/src/features/authentication/screens/profile/widgets
 import 'package:guardian_key/src/features/authentication/screens/profile/widgets/profile_menu.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/widgets/toggle_menu_widget.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
-
-
 import 'package:guardian_key/src/repository/authentication_repository.dart';
 
 
@@ -73,18 +71,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 30),
               const Divider(),
               const SizedBox(height: 10),
-              ToggleMenuWidget(
-                title: "Biometric Authentication",
-                icon: LineAwesomeIcons.user_check,
-                initialValue: false,
-                onChanged: (value) {},
+              FutureBuilder<bool>(
+                future: ProfileController.instance.isBiometricAuthEnabled(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      // Handle the error appropriately.
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    bool isBiometricAuthEnabled = snapshot.data ?? false;
+                    return ToggleMenuWidget(
+                      title: "Biometric Authentication",
+                      icon: LineAwesomeIcons.user_check,
+                      initialValue: isBiometricAuthEnabled,
+                      onChanged: (value) async {
+                        if (value) {
+                          bool success = await ProfileController.instance.enableBiometricAuth();
+                          if (!success) {
+                            Get.snackbar(
+                              'Error',
+                              'Failed to enable biometric authentication.',
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
+                        } else {
+                          await ProfileController.instance.disableBiometricAuth();
+                        }
+                      },
+                    );
+                  } else {
+                    // While waiting for the Future to complete, display a loader.
+                    return CircularProgressIndicator();
+                  }
+                },
               ),
-              ToggleMenuWidget(
-                title: "Auto fill pass",
-                icon: LineAwesomeIcons.wallet,
-                initialValue: false,
-                onChanged: (value) {},
+
+              FutureBuilder<bool>(
+                  future: ProfileController.instance.isAutoFillEnabled(),
+                  builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasError) {
+                              // Handle the error appropriately.
+                              return Text('Error: ${snapshot.error}');
+                          }
+                          bool isAutoFillEnabled = snapshot.data ?? false;
+                          return ToggleMenuWidget(
+                              title: "Auto-Fill",
+                              icon: LineAwesomeIcons.wallet,
+                              initialValue: isAutoFillEnabled,
+                              onChanged: (value) async {
+                                  ProfileController.instance.setAutoFill(value);
+                                  // TODO: Handle other logic related to enabling or disabling auto-fill.
+                              },
+                          );
+                      } else {
+                          // While waiting for the Future to complete, display a loader.
+                          return CircularProgressIndicator();
+                      }
+                  },
               ),
+
               const Divider(),
               const SizedBox(height: 10),
               ProfileMenuWidget(title: "Information", icon: LineAwesomeIcons.info, onPress: () {}),
