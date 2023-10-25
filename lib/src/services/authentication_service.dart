@@ -27,25 +27,25 @@ class AuthenticationService {
       return isAuthenticated;
   }
 
-  Future<bool> enableBiometricAuth() async {
+Future<bool> enableBiometricAuth(String userId) async {
     final bool canAuthenticate = await _localauth.canCheckBiometrics;
     if (canAuthenticate) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('biometricAuthEnabled', true);
+      await prefs.setBool('biometricAuthEnabled_$userId', true);
       return true;
     } else {
       return false; // Cannot enable biometric authentication
     }
-  }
+}
 
-  Future<bool> disableBiometricAuth() async {
+  Future<bool> disableBiometricAuth(String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('biometricAuthEnabled', false);
+    await prefs.setBool('biometricAuthEnabled_$userId', false); 
     return true;
-  }
+}
 
-  Future<bool> isBiometricAuthEnabled() async {
+  Future<bool> isBiometricAuthEnabled(String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('biometricAuthEnabled') ?? false;
-  }
+    return prefs.getBool('biometricAuthEnabled_$userId') ?? false;
+}
 }

@@ -33,7 +33,8 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance?.addObserver(this);
     _getLastBackgroundedTime();
-    _authenticationService.isBiometricAuthEnabled().then((isEnabled) {
+    String userId = _authRepo.getUserID;
+    _authenticationService.isBiometricAuthEnabled(userId).then((isEnabled) {
       if (isEnabled) {
         _authenticateUser();
       }
@@ -263,18 +264,21 @@ Future<void> deleteUser() async {
 
   // Use this method when you want to enable biometric authentication
   Future<bool> enableBiometricAuth() async {
-    return await _authenticationService.enableBiometricAuth();
-  }
+    String userId = _authRepo.getUserID;
+    return await _authenticationService.enableBiometricAuth(userId);
+}
 
   // Use this method when you want to disable biometric authentication
   Future<bool> disableBiometricAuth() async {
-    return await _authenticationService.disableBiometricAuth();
-  }
+    String userId = _authRepo.getUserID;
+    return await _authenticationService.disableBiometricAuth(userId);
+}
 
   // Use this method when you want to check if biometric auth is enabled
   Future<bool> isBiometricAuthEnabled() async {
-    return await _authenticationService.isBiometricAuthEnabled();
-  }
+    String userId = _authRepo.getUserID;
+    return await _authenticationService.isBiometricAuthEnabled(userId);
+}
 
     Future<void> _getLastBackgroundedTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -291,23 +295,27 @@ Future<void> deleteUser() async {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-      super.didChangeAppLifecycleState(state);
+    super.didChangeAppLifecycleState(state);
 
-      if (state == AppLifecycleState.paused) {
-          _lastBackgroundedTime = DateTime.now();
-          await _setLastBackgroundedTime(_lastBackgroundedTime!);
-      } else if (state == AppLifecycleState.resumed && !_isFirstLaunch) {
-          final currentTime = DateTime.now();
-          bool isBiometricAuthEnabled = await _authenticationService.isBiometricAuthEnabled();
-          if (isBiometricAuthEnabled &&
-              _lastBackgroundedTime != null &&
-              currentTime.difference(_lastBackgroundedTime!).inMinutes >= 5 &&
-              ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 10) &&
-              !_isAuthenticating) {
-              _authenticateUser();
-          }
-      }
-      _isFirstLaunch = false;
+    if (state == AppLifecycleState.paused) {
+        _lastBackgroundedTime = DateTime.now();
+        await _setLastBackgroundedTime(_lastBackgroundedTime!);
+    } else if (state == AppLifecycleState.resumed && !_isFirstLaunch) {
+        final currentTime = DateTime.now();
+
+        // Fetch user's ID and pass it to isBiometricAuthEnabled
+        String userId = _authRepo.getUserID;
+        bool isBiometricAuthEnabled = await _authenticationService.isBiometricAuthEnabled(userId);
+
+        if (isBiometricAuthEnabled &&
+            _lastBackgroundedTime != null &&
+            currentTime.difference(_lastBackgroundedTime!).inMinutes >= 5 &&
+            ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 10) &&
+            !_isAuthenticating) {
+            _authenticateUser();
+        }
+    }
+    _isFirstLaunch = false;
   }
 
   Future<void> _authenticateUser() async {
