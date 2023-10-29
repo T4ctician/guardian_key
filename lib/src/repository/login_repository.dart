@@ -21,28 +21,38 @@ class LoginRepository extends GetxController {
   }
 
   /// Store login data
-Future<void> createLogin(CredentialModel login) async {
+Future<void> createLogin(CredentialModel login, String masterPassword) async {
     try {
-      await _db.collection("Users").doc(checkUserId).collection("Logins").add(login.toJson());
+      await _db.collection("Users").doc(checkUserId).collection("Logins").add(login.toJson(masterPassword));
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
   /// Fetch specific login details
-  Future<CredentialModel> getLoginDetails(String email) async {
+  Future<CredentialModel> getLoginDetails(String email, String masterPassword) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("Email", isEqualTo: email).get();
       if (snapshot.docs.isEmpty) throw 'No such login found';
-      return CredentialModel.fromSnapshot(snapshot.docs.first);
+      return CredentialModel.fromSnapshot(snapshot.docs.first, masterPassword);
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
 
   /// Update Login details
-  Future<void> updateLoginRecord(CredentialModel login) async {
+  Future<void> updateLoginRecord(CredentialModel login, String masterPassword) async {
+    Map<String, dynamic> loginData = login.toJson(masterPassword);
     try {
-      await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update(login.toJson());
+      if (login.userID.isEmpty) {
+        // Explicitly delete the fields related to userID if it's empty
+        await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update({
+          "UserID": FieldValue.delete(),
+          "UserIDIV": FieldValue.delete()
+        });
+        await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update(loginData);
+      } else {
+        await _db.collection("Users").doc(checkUserId).collection("Logins").doc(login.id).update(loginData);
+      }
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
@@ -75,30 +85,30 @@ Future<void> deleteLogin(String id) async {
 }
 
 // Fetch a login by website name
-Future<CredentialModel?> getLoginByWebsiteName(String websiteName) async {
+Future<CredentialModel?> getLoginByWebsiteName(String websiteName, String masterPassword) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").where("WebsiteName", isEqualTo: websiteName).get();
       if (snapshot.docs.isEmpty) return null;
-      return CredentialModel.fromSnapshot(snapshot.docs.first);
+      return CredentialModel.fromSnapshot(snapshot.docs.first, masterPassword);
     } catch (e) {
         throw e.toString();
     }
 }
 
   //
-    Future<List<CredentialModel>> getAllLogins() async {
+    Future<List<CredentialModel>> getAllLogins(String masterPassword) async {
         try {
             final snapshot = await _db.collection("Users").doc(checkUserId).collection("Logins").get();
-            return snapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc)).toList();
+            return snapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc, masterPassword)).toList();
         } catch (e) {
             throw handleFirebaseErrors(e);
         }
     }
 
   // Inside the LoginRepository class
-  Stream<List<CredentialModel>> listenToAllLogins() {
+  Stream<List<CredentialModel>> listenToAllLogins(String masterPassword) {
     return _db.collection("Users").doc(checkUserId).collection("Logins").snapshots().map((querySnapshot) {
-      return querySnapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc)).toList();
+      return querySnapshot.docs.map((doc) => CredentialModel.fromSnapshot(doc, masterPassword)).toList();
     });
 }
 

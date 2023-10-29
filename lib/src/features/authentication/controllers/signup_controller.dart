@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
+import 'package:guardian_key/src/features/authentication/screens/login.dart';
 import 'package:guardian_key/src/repository/user_repository.dart';
 import 'package:guardian_key/src/repository/authentication_repository.dart';
 
@@ -41,8 +42,7 @@ Future<void> createUser() async {
       
       // Create a new UserModel instance with all the required properties
       UserModel user = UserModel(
-        email: email.text.trim(),
-        password: password.text.trim(), // Consider not storing passwords in UserModel
+        email: email.text.trim(), 
         firstName: firstName.text.trim(),
         lastName: lastName.text.trim(),
         dateOfBirth: dateOfBirth.text.trim(),
@@ -50,7 +50,7 @@ Future<void> createUser() async {
       );
       
       await userRepo.createUser(user); //Store Data in FireStore
-      // AuthenticationRepository.instance.firebaseUser.refresh();
+      Get.snackbar("Success:", "User Created.");
     } catch (e) {
       isLoading.value = false;
       Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 5));

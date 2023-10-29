@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/controllers/login_controller.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/features/authentication/controllers/signup_controller.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 import 'package:guardian_key/src/features/authentication/controllers/addcredential_controller.dart';
@@ -28,6 +29,7 @@ class AppBinding extends Bindings{
     Get.lazyPut(() => AddCredentialController(), fenix:true);
     Get.lazyPut(() => AddNoteController(), fenix:true);
     Get.lazyPut(() => CreditCardController(), fenix:true);
+    Get.lazyPut(() => MasterPasswordController(), fenix:true);
 
 
 

@@ -36,5 +36,7 @@ class _MyAppState extends State<MyApp>{
       transitionDuration: const Duration(milliseconds: 500),
       home: const Scaffold(body: Center(child: CircularProgressIndicator())),
     );
+  
   }
+  
 }

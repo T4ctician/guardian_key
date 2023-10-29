@@ -7,17 +7,17 @@ class UserModel {
   final String email;
   final String dateOfBirth;
   final String gender;
-  final String password;
+  String? masterPasswordHash;
 
   /// Constructor
-  const UserModel({
+   UserModel({
     this.id,
     required this.email,
-    required this.password,
     required this.firstName,
     required this.lastName,
     required this.dateOfBirth,
     required this.gender,
+    this.masterPasswordHash,
   });
 
   /// Convert model to Json structure so that you can use it to store data in Firebase
@@ -28,7 +28,8 @@ class UserModel {
       "Email": email,
       "DateOfBirth": dateOfBirth,
       "Gender": gender,
-      "Password": password
+      "MasterPasswordHash": masterPasswordHash
+
     };
   }
 
@@ -42,7 +43,7 @@ class UserModel {
       email: data["Email"],
       dateOfBirth: data["DateOfBirth"],
       gender: data["Gender"],
-      password: data["Password"], 
+      masterPasswordHash: data["MasterPasswordHash"], 
     );
   }
 }

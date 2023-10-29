@@ -32,7 +32,7 @@ class UpdateProfileScreen extends StatelessWidget {
 
                   //Controllers
                   final email = TextEditingController(text: user.email);
-                  final password = TextEditingController(text: user.password);
+                  final password = TextEditingController();
                   final firstName = TextEditingController(text: user.firstName);
                   final lastName = TextEditingController(text: user.lastName);
 

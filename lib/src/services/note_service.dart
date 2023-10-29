@@ -1,11 +1,18 @@
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/features/authentication/models/note_model.dart';  
 import 'package:guardian_key/src/repository/note_repository.dart';  
 
 class NoteService {
   final _noteRepo = NoteRepository.instance;  // Use NoteRepository
 
+    String get masterPassword {
+    final masterPasswordController = Get.find<MasterPasswordController>();
+    return masterPasswordController.masterPassword ?? '';  // if null, return an empty string
+  }
+
   Future<List<NoteModel>> fetchNoteData() async {  // Updated to NoteModel
-    return await _noteRepo.getAllNotes();  // Ensure _noteRepo returns NoteModel
+    return await _noteRepo.getAllNotes(masterPassword);  // Ensure _noteRepo returns NoteModel
   }
   
   Future<List<String>> fetchNoteTitles() async {
@@ -50,6 +57,6 @@ class NoteService {
 
   // Inside the NoteService class
   Stream<List<NoteModel>> listenToAllNotes() {
-    return _noteRepo.listenToAllNotes();  // Use the NoteRepository's listenToAllNotes method
+    return _noteRepo.listenToAllNotes(masterPassword);  // Use the NoteRepository's listenToAllNotes method
   }
 }

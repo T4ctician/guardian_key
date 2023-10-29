@@ -48,6 +48,9 @@ dependencies:
   shared_preferences: ^2.2.1
   image_picker: ^1.0.4
   local_auth: ^2.1.7
+  crypto: ^3.0.3
+  encrypt: ^5.0.3
+  pointycastle: ^3.7.3
 
 flutter_native_splash:
   color: "#ffffff"

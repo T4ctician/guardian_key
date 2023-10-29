@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/models/user_model.dart';
 import 'package:guardian_key/src/repository/exceptions/t_exceptions.dart';
+import 'package:guardian_key/src/services/encryption_service.dart';
 
 class UserRepository extends GetxController {
   static UserRepository get instance => Get.find();
@@ -109,4 +110,40 @@ class UserRepository extends GetxController {
       throw TExceptions.fromCode('invalid-email');
     }
   }
+
+  Future<void> saveMasterPasswordHash(String masterPasswordHash) async {
+  //print('Entering saveMasterPasswordHash with value: $masterPasswordHash');
+  try {
+    //print('Attempting to update database with masterPasswordHash...');
+    //print('Using user ID for update: ${checkUserId}');
+    await _db.collection("Users").doc(checkUserId).update({
+      "MasterPasswordHash": masterPasswordHash,
+      
+    });
+    // print('Using user ID for update: ${checkUserId}');
+    // print('Database updated successfully with masterPasswordHash.');
+  } on FirebaseAuthException catch (e) {
+    final result = TExceptions.fromCode(e.code);
+    // print("FirebaseAuthException: ${result.message}");
+    throw result.message;
+  } on FirebaseException catch (e) {
+      //print("FirebaseException: ${e.message}");
+    throw e.message.toString();
+  } catch (e) {
+    //print('Exception in saveMasterPasswordHash: $e');
+    throw 'Something went wrong. Please Try Again';
+  }
+  }
+
+Future<String?> getMasterPasswordHash() async {
+  try {
+    final docSnapshot = await _db.collection("Users").doc(checkUserId).get();
+    final _masterPassword = docSnapshot.data()?['MasterPasswordHash'] as String?;
+    return _masterPassword;
+  } catch (e) {
+    //print("Error in getMasterPasswordHash: $e");
+    throw e;
+  }
+  }  
+
 }

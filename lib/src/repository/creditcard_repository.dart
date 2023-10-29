@@ -20,29 +20,39 @@ class CreditCardRepository extends GetxController {
   }
 
   /// Store credit card data
-  Future<void> createCreditCard(CreditCardModel creditCard) async {
+  Future<void> createCreditCard(CreditCardModel creditCard,String masterPassword) async {
     try {
-      await _db.collection("Users").doc(checkUserId).collection("CreditCards").add(creditCard.toJson());
+      await _db.collection("Users").doc(checkUserId).collection("CreditCards").add(creditCard.toJson(masterPassword));
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
 
   /// Fetch specific credit card details by card number
-  Future<CreditCardModel> getCreditCardDetails(String creditCardNumber) async {
+  Future<CreditCardModel> getCreditCardDetails(String creditCardNumber, String masterPassword) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("CreditCards").where("CreditCardNumber", isEqualTo: creditCardNumber).get();
       if (snapshot.docs.isEmpty) throw 'No such credit card found';
-      return CreditCardModel.fromSnapshot(snapshot.docs.first);
+      return CreditCardModel.fromSnapshot(snapshot.docs.first, masterPassword);
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
 
   /// Update Credit Card
-  Future<void> updateCreditCardRecord(CreditCardModel creditCard) async {
+  Future<void> updateCreditCardRecord(CreditCardModel creditCard, String masterPassword) async {
+    Map<String, dynamic> creditCardData = creditCard.toJson(masterPassword);  // Declare outside of the try block
     try {
-      await _db.collection("Users").doc(checkUserId).collection("CreditCards").doc(creditCard.id).update(creditCard.toJson());
+      if (creditCard.note.isEmpty) {
+        // Explicitly delete the fields related to note if it's empty
+        await _db.collection("Users").doc(checkUserId).collection("CreditCards").doc(creditCard.id).update({
+          "Note": FieldValue.delete(),
+          "NoteIV": FieldValue.delete()
+        });
+        await _db.collection("Users").doc(checkUserId).collection("CreditCards").doc(creditCard.id).update(creditCardData);
+      } else {
+        await _db.collection("Users").doc(checkUserId).collection("CreditCards").doc(creditCard.id).update(creditCardData);
+      }
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
@@ -78,7 +88,8 @@ class CreditCardRepository extends GetxController {
 Future<CreditCardModel?> getCreditCardByCardholderNameBankAndLast4(
     String cardholderName, 
     String issuingBank, 
-    String last4Digits) async {
+    String last4Digits,
+    String masterPassword) async {
     
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("CreditCards")
@@ -88,13 +99,13 @@ Future<CreditCardModel?> getCreditCardByCardholderNameBankAndLast4(
         .get();
         
       if (snapshot.docs.isEmpty) return null;
-      return CreditCardModel.fromSnapshot(snapshot.docs.first);
+      return CreditCardModel.fromSnapshot(snapshot.docs.first, masterPassword);
     } catch (e) {
         throw e.toString();
     }
 }
 
-Future<List<CreditCardModel>> getCreditCardByCardholderNameAndBank(String cardholderName, String issuingBank) async {
+Future<List<CreditCardModel>> getCreditCardByCardholderNameAndBank(String cardholderName, String issuingBank, String masterPassword) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("CreditCards")
           .where("CardholderName", isEqualTo: cardholderName)
@@ -103,7 +114,7 @@ Future<List<CreditCardModel>> getCreditCardByCardholderNameAndBank(String cardho
 
       if (snapshot.docs.isEmpty) return [];
 
-      return snapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc)).toList();
+      return snapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc, masterPassword)).toList();
     } catch (e) {
         throw e.toString();
     }
@@ -111,19 +122,19 @@ Future<List<CreditCardModel>> getCreditCardByCardholderNameAndBank(String cardho
 
 
   // Fetch all credit cards
-  Future<List<CreditCardModel>> getAllCreditCards() async {
+  Future<List<CreditCardModel>> getAllCreditCards(String masterPassword) async {
     try {
       final snapshot = await _db.collection("Users").doc(checkUserId).collection("CreditCards").get();
-      return snapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc)).toList();
+      return snapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc, masterPassword)).toList();
     } catch (e) {
       throw handleFirebaseErrors(e);
     }
   }
 
   // Stream to listen to all credit cards
-  Stream<List<CreditCardModel>> listenToAllCreditCards() {
+  Stream<List<CreditCardModel>> listenToAllCreditCards(String masterPassword) {
     return _db.collection("Users").doc(checkUserId).collection("CreditCards").snapshots().map((querySnapshot) {
-      return querySnapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc)).toList();
+      return querySnapshot.docs.map((doc) => CreditCardModel.fromSnapshot(doc, masterPassword)).toList();
     });
   }
 }

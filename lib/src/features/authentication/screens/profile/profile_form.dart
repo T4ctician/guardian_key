@@ -14,6 +14,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
     final TextEditingController email;
     final TextEditingController password;
     final UserModel user;
+    
 
     const ProfileFormScreen({
       Key? key,
@@ -31,6 +32,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
   class _ProfileFormScreenState extends State<ProfileFormScreen> {
     bool isPasswordObscured = true;
     final _formKey = GlobalKey<FormState>();
+    final controller = Get.put(ProfileController());  
 
 
     void toggleObscure() {
@@ -62,7 +64,23 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
         children: [
           TextFormField(
             controller: widget.firstName,
-            decoration: const InputDecoration(label: Text('First Name'), prefixIcon: Icon(LineAwesomeIcons.user)),
+            decoration: InputDecoration(
+              label: Text('First Name' + (widget.firstName.text.isEmpty ? ' *' : ''),
+                style: TextStyle(
+                  color: widget.firstName.text.isEmpty ? Colors.red : null,
+                ),
+              ),
+              prefixIcon: Icon(LineAwesomeIcons.user),
+              errorStyle: TextStyle(
+                color: Colors.redAccent,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'First Name is required';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: tFormHeight - 20),
           TextFormField(
@@ -73,45 +91,47 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
           TextFormField(
             controller: widget.password,
             obscureText: isPasswordObscured,
+            onChanged: (value) {
+              controller.newPassword.value = value;  // Store the new password
+            },
             decoration: InputDecoration(
               label: const Text("New Password"),
               hintText: "Enter new password",
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
-                  icon: Icon(isPasswordObscured ? LineAwesomeIcons.eye_slash : LineAwesomeIcons.eye),
-                  onPressed: toggleObscure,
+                icon: Icon(isPasswordObscured ? LineAwesomeIcons.eye_slash : LineAwesomeIcons.eye),
+                onPressed: toggleObscure,
+              ),
             ),
-          ),
             validator: (value) {
-                print("Validating password...");
-                if (value == null || value.isEmpty) {
-                    return "Enter Password";
-                } 
+              print("Validating password...");
+              if (value == null || value.isEmpty) {
+                return "Enter Password";
+              } 
 
-                List<String> errors = [];
+              List<String> errors = [];
 
-                if (value.length < 8) {
-                    errors.add("Use 8 or more characters");
-                }
-                if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                    errors.add("Use at least one uppercase letter");
-                }
-                if (!RegExp(r'[a-z]').hasMatch(value)) {
-                    errors.add("Use at least one lowercase letter");
-                }
-                if (!RegExp(r'[0-9]').hasMatch(value)) {
-                    errors.add("Use at least one number");
-                }
-                if (!RegExp(r'[!@#$&]').hasMatch(value)) {
-                    errors.add(r"Use one special char !@#$&");
-                }
+              if (value.length < 8) {
+                errors.add("Use 8 or more characters");
+              }
+              if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                errors.add("Use at least one uppercase letter");
+              }
+              if (!RegExp(r'[a-z]').hasMatch(value)) {
+                errors.add("Use at least one lowercase letter");
+              }
+              if (!RegExp(r'[0-9]').hasMatch(value)) {
+                errors.add("Use at least one number");
+              }
+              if (!RegExp(r'[!@#$&]').hasMatch(value)) {
+                errors.add(r"Use one special char !@#$&");
+              }
 
-                if (errors.isNotEmpty) {
-                    return errors.join('\n');
-                }
-                return null;
+              if (errors.isNotEmpty) {
+                return errors.join('\n');
+              }
+              return null;
             },
-
           ),
           const SizedBox(height: tFormHeight),
 
@@ -124,7 +144,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
                   final userData = UserModel(
                     id: widget.user.id,
                     email: widget.email.text.trim(),
-                    password: widget.password.text.trim(),
+                    
                     firstName: widget.firstName.text.trim(),
                     lastName: widget.lastName.text.trim(),
                     dateOfBirth: widget.user.dateOfBirth,
@@ -169,7 +189,7 @@ import 'package:guardian_key/src/features/authentication/controllers/profile_con
                   ),
                 );
 
-                if (shouldDelete != null && shouldDelete) {
+                if (shouldDelete == true) {
                   controller.deleteUser();
                   // Optionally, you can navigate to another page or show a message that user has been deleted
                 }

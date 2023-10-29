@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
 import 'package:guardian_key/src/constants/text_strings.dart';
@@ -6,8 +11,10 @@ import 'package:guardian_key/src/features/authentication/models/user_model.dart'
 import 'package:guardian_key/src/features/authentication/models/credential_model.dart';
 import 'package:guardian_key/src/features/authentication/controllers/profile_controller.dart';
 import 'package:guardian_key/src/features/authentication/screens/profile/profile_screen.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/creditcard_section.dart';
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/note_section.dart';
+import 'package:guardian_key/src/services/encryption_service.dart';
 import 'package:guardian_key/src/services/login_service.dart'; 
 import 'package:guardian_key/src/features/authentication/screens/widgets/homepagefunction/credential_section.dart';
 
@@ -24,6 +31,8 @@ class HomePageWidgetState extends State<HomePageWidget> {
   List<CredentialModel> displayedPasswords = [];
   final weakPasswordAlertNotifier = ValueNotifier<bool>(false);
 
+  final TextEditingController masterPasswordController = TextEditingController();
+
   UserModel? _currentUser;
   final loginService = LoginService();
   String? currentSection;
@@ -39,6 +48,9 @@ class HomePageWidgetState extends State<HomePageWidget> {
       return const CredentialsSection(); 
     }
   ).then((value) {
+    setState(() {
+      currentSection = null;  // Reset the current section when modal is dismissed
+    });
   });
 }
 
@@ -53,6 +65,9 @@ class HomePageWidgetState extends State<HomePageWidget> {
       return const NotesSection(); 
     }
   ).then((value) {
+    setState(() {
+      currentSection = null;  // Reset the current section when modal is dismissed
+    });
   });
 }
 
@@ -67,12 +82,21 @@ void _showCreditCardModal() {
       return const CreditCardSection(); 
     }
   ).then((value) {
+    setState(() {
+      currentSection = null;  // Reset the current section when modal is dismissed
+    });
   });
 }
 
   @override
   void initState() {
     super.initState();
+    
+    print("HomePageWidgetState initState called");
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+    final masterPasswordController = Get.find<MasterPasswordController>();
+    masterPasswordController.ensureMasterPasswordIsSet();
+    });
     _fetchUserData();
   }
 
@@ -94,16 +118,25 @@ void _showCreditCardModal() {
   try {
     await _fetchUserData();  // This fetches and updates your data
     setState(() {}); // This ensures the UI is refreshed
-  } catch (error) {
+    } catch (error) {
     // Handle any errors here
     print('Error refreshing data: $error');
+    }
   }
-}
 
+  Future<bool> _doesUserExistInFirestore() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+    
+    final snapshot = await FirebaseFirestore.instance.collection("Users").doc(user.uid).get();
+    return snapshot.exists;
+  }
+  
 
-    @override
+  @override
   void dispose() {
     weakPasswordAlertNotifier.dispose();
+    masterPasswordController.dispose();
     super.dispose();
   }
 
@@ -353,6 +386,5 @@ Widget getCurrentSection() {
       return Container(); // default empty container or any default view
   }
 }
-
 
 }

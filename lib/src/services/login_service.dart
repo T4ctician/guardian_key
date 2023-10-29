@@ -1,11 +1,18 @@
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/features/authentication/models/credential_model.dart';  // Make sure to import CredentialModel
 import 'package:guardian_key/src/repository/login_repository.dart';
 
 class LoginService {
   final _loginRepo = LoginRepository.instance;
 
+  String get masterPassword {
+    final masterPasswordController = Get.find<MasterPasswordController>();
+    return masterPasswordController.masterPassword ?? '';  // if null, return an empty string
+  }
+
   Future<List<CredentialModel>> fetchPasswordData() async {  // Updated to CredentialModel
-    return await _loginRepo.getAllLogins();  // Ensure _loginRepo returns CredentialModel
+    return await _loginRepo.getAllLogins(masterPassword);  // Ensure _loginRepo returns CredentialModel
   }
   
   Future<List<String>> fetchWebsiteList() async {
@@ -31,7 +38,7 @@ class LoginService {
       // Find the password with the matching website name
       final selectedPassword = data.firstWhere(
         (password) => password.websiteName == websiteName,
-        orElse: () => const CredentialModel(  // Updated to CredentialModel
+        orElse: () =>  CredentialModel(  // Updated to CredentialModel
           websiteName: '',
           userID: '',
           email: '',
@@ -43,7 +50,7 @@ class LoginService {
     } catch (e) {
       // Handle any errors here
       print('Error fetching password by website name: $e');
-      return const CredentialModel(  // Updated to CredentialModel
+      return CredentialModel(  // Updated to CredentialModel
         websiteName: '',
         userID: '',
         email: '',
@@ -54,7 +61,7 @@ class LoginService {
 
   // Inside the LoginService class
   Stream<List<CredentialModel>> listenToAllLogins() {
-    return _loginRepo.listenToAllLogins();
+    return _loginRepo.listenToAllLogins(masterPassword);
   }
 
   

@@ -109,7 +109,7 @@ class _AddcreditcardState extends State<Addcreditcard> {
               ),
             ),
             const SizedBox(height: 20),
-            creditCardContainer(context, creditCardService),
+            //creditCardContainer(context, creditCardService),
             Column(
               children: [
                 formHeading("CardHolder Name"),
@@ -406,6 +406,7 @@ class _AddcreditcardState extends State<Addcreditcard> {
     );
   }
 
+/*
   Widget creditCardContainer(BuildContext context, CreditCardService creditCardService) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Row(
@@ -549,7 +550,7 @@ Widget creditCardBlock(CreditCardModel card, BuildContext context) {
         ),
     );
 }
-
+*/
 
   Future<bool?> showConfirmationDialog(BuildContext context) {
     return showDialog<bool>(

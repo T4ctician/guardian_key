@@ -99,7 +99,7 @@ class AddModalState extends State<AddModal> {
             const SizedBox(
               height: 20,
             ),
-            websiteContainer(context, loginService),
+            //websiteContainer(context, loginService),
             Column(
               children: [
                 formHeading("Website / Application Name"),
@@ -173,9 +173,9 @@ class AddModalState extends State<AddModal> {
                             );
 
                         // Check if login already exists
-                          CredentialModel? existingLogin = await AddCredentialController.instance.getLoginByWebsiteName(login.websiteName);
+                         // CredentialModel? existingLogin = await AddCredentialController.instance.getLoginByWebsiteName(login.websiteName);
 
-                          if (existingLogin == null) {
+                          if (widget.passwordO == null) {
                           // Call the addLogin method to save the login
                             AddCredentialController.instance.addLogin(login);
                             } else {
@@ -207,6 +207,7 @@ class AddModalState extends State<AddModal> {
                         Navigator.of(context).pop();
                       }
                     },
+                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
                 ),
@@ -354,8 +355,6 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
   );
 }
 
-
-
   Widget formHeading(String text) {
     return Align(
       alignment: Alignment.topLeft,
@@ -369,7 +368,7 @@ Widget formTextField(String hintText, IconData icon, {TextEditingController? con
     );
   }
 
-Widget websiteContainer(BuildContext context, LoginService loginService) {
+/*Widget websiteContainer(BuildContext context, LoginService loginService) {
   double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
   return Row(
@@ -440,6 +439,7 @@ Widget websiteContainer(BuildContext context, LoginService loginService) {
     ],
   );
 }
+
 
 void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
   Navigator.of(context).pop();
@@ -518,6 +518,7 @@ void showAddModal(BuildContext context, {CredentialModel? passwordO}) {
     },
   );
 }
+*/
 
 
   Future<bool?> showConfirmationDialog(BuildContext context) {

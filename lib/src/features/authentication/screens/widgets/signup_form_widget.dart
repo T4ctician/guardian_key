@@ -14,6 +14,7 @@ class SignUpFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Building SignUpFormWidget');
     final controller = Get.find<SignUpController>();
     final formKey = GlobalKey<FormState>();
 
@@ -25,12 +26,24 @@ class SignUpFormWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextFormField(
-              controller: controller.firstName,
-              decoration: const InputDecoration(
-                  label: Text(tFirstName),
-                  prefixIcon: Icon(LineAwesomeIcons.user)),
+          TextFormField(
+            controller: controller.firstName,
+            decoration: InputDecoration(
+              label: Text(
+                tFirstName + (controller.firstName.text.isEmpty ? " *" : ""), 
+                style: TextStyle(
+                  color: controller.firstName.text.isEmpty ? Colors.red : null
+                )
+              ),
+              prefixIcon: const Icon(LineAwesomeIcons.user),
             ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'First Name cannot be empty';
+              }
+              return null;
+            },
+          ),
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
               controller: controller.lastName,
@@ -40,13 +53,18 @@ class SignUpFormWidget extends StatelessWidget {
             ),
             TextFormField(
               controller: controller.email,
-              decoration: const InputDecoration(
-                label: Text(tEmail),
-                prefixIcon: Icon(LineAwesomeIcons.envelope)
+              decoration: InputDecoration(
+                label: Text(
+                  tEmail + (controller.email.text.isEmpty ? " *" : ""), 
+                  style: TextStyle(
+                    color: controller.email.text.isEmpty ? Colors.red : null
+                  )
+                ),
+                prefixIcon: const Icon(LineAwesomeIcons.envelope),
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter an email';
+                if (value == null || value.trim().isEmpty) {
+                  return 'Email cannot be empty';
                 } else if (!RegExp(
                   r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
                 ).hasMatch(value)) {
@@ -55,6 +73,7 @@ class SignUpFormWidget extends StatelessWidget {
                 return null;
               },
             ),
+
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
               controller: controller.dateOfBirth, // Use TextEditingController for TextField
@@ -92,63 +111,90 @@ class SignUpFormWidget extends StatelessWidget {
             ),
             const SizedBox(height: tFormHeight - 20),
             Obx(
-              () => TextFormField(
-                controller: controller.password,
-                obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
-                decoration: InputDecoration(
-                    label: const Text('Password'),
-                    prefixIcon: const Icon(LineAwesomeIcons.key),
-                    suffixIcon: IconButton(
-                      onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
-                      icon: Icon(controller.obscureText.value
-                          ? LineAwesomeIcons.eye
-                          : LineAwesomeIcons.eye_slash),
-                    )),
-                validator: (value) {
-                  // Put your password validation logic here
-                  if (value == null || value.isEmpty) {
-                    return "Enter Password";
-                  } else if (value.length < 8) {
-                    return "Use 8 or more characters";
-                  } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                    return "Use at least one uppercase letter";
-                  } else if (!RegExp(r'[a-z]').hasMatch(value)) {
-                    return "Use at least one lowercase letter";
-                  } else if (!RegExp(r'[0-9]').hasMatch(value)) {
-                    return "Use at least one number";
-                  } else if (!RegExp(r'[!@#$&]').hasMatch(value)) {
-                    return r"Use one special char !@#$&";
-                  }
-                  return null;
-                },
+            () => TextFormField(
+              controller: controller.password,
+              obscureText: controller.obscureText.value,
+              decoration: InputDecoration(
+                label: Text(
+                  'Password' + (controller.password.text.isEmpty ? ' *' : ''),
+                  style: TextStyle(
+                    color: controller.password.text.isEmpty ? Colors.red : null,
+                  ),
+                ),
+                prefixIcon: const Icon(LineAwesomeIcons.key),
+                suffixIcon: IconButton(
+                  onPressed: controller.togglePasswordVisibility,
+                  icon: Icon(
+                    controller.obscureText.value ? LineAwesomeIcons.eye : LineAwesomeIcons.eye_slash,
+                  ),
+                ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Enter Password";
+                } else if (value.length < 8) {
+                  return "Use 8 or more characters";
+                } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                  return "Use at least one uppercase letter";
+                } else if (!RegExp(r'[a-z]').hasMatch(value)) {
+                  return "Use at least one lowercase letter";
+                } else if (!RegExp(r'[0-9]').hasMatch(value)) {
+                  return "Use at least one number";
+                } else if (!RegExp(r'[!@#$&]').hasMatch(value)) {
+                  return r"Use one special char !@#$&";
+                }
+                return null;
+              },
             ),
-            const SizedBox(height: tFormHeight - 20),
-            Obx(
-              () => TextFormField(
-                controller: controller.confirmPassword,
-                obscureText: controller.obscureText.value, // It will make password obscure, showing dots instead of text
-                decoration: InputDecoration(
-                    label: const Text('Confirm Password'),
-                    prefixIcon: const Icon(LineAwesomeIcons.key),
-                    suffixIcon: IconButton(
-                      onPressed: controller.togglePasswordVisibility, // It will toggle the password visibility
-                      icon: Icon(controller.obscureText.value
-                          ? LineAwesomeIcons.eye
-                          : LineAwesomeIcons.eye_slash),
-                    )),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Confirm Password';
-                  } else if (value != controller.password.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+          ),
+          const SizedBox(height: tFormHeight - 20),
+          Obx(
+            () => TextFormField(
+              controller: controller.confirmPassword,
+              obscureText: controller.obscureText.value,
+              decoration: InputDecoration(
+                label: Text(
+                  'Confirm Password' + (controller.confirmPassword.text.isEmpty ? ' *' : ''),
+                  style: TextStyle(
+                    color: controller.confirmPassword.text.isEmpty ? Colors.red : null,
+                  ),
+                ),
+                prefixIcon: const Icon(LineAwesomeIcons.key),
+                suffixIcon: IconButton(
+                  onPressed: controller.togglePasswordVisibility,
+                  icon: Icon(
+                    controller.obscureText.value ? LineAwesomeIcons.eye : LineAwesomeIcons.eye_slash,
+                  ),
+                ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Confirm Password';
+                } else if (value != controller.password.text) {
+                  return 'Passwords do not match';
+                }
+                return null;
+              },
             ),
+          ),
+
             const SizedBox(height: tFormHeight - 20),
-            CheckboxListTile(
+            ListTile(
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,  // To prevent the row from expanding
+                children: [
+                  Obx(
+                    () => IconButton(
+                      icon: controller.termsAccepted.value 
+                            ? Icon(Icons.check_box, color: Colors.blue) 
+                            : Icon(Icons.check_box_outline_blank),
+                      onPressed: () {
+                        controller.termsAccepted.value = !controller.termsAccepted.value;
+                      },
+                    ),
+                  ),
+                ],
+              ),
               title: RichText(
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style, // this is the default text style
@@ -186,12 +232,6 @@ class SignUpFormWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              value: controller.termsAccepted.value,
-              
-              onChanged: (newValue) {
-                controller.termsAccepted.value = !controller.termsAccepted.value;
-              },
-              controlAffinity: ListTileControlAffinity.leading,  // Places the checkbox at the start
             ),
 
             Obx(
@@ -201,17 +241,16 @@ class SignUpFormWidget extends StatelessWidget {
                   onPressed: controller.termsAccepted.value // Button is enabled only if terms are accepted
                       ? () {
                           if (formKey.currentState!.validate()) {
-                      final user = UserModel(
-                        email: controller.email.text.trim(),
-                        password: controller.password.text.trim(),
-                        firstName: controller.firstName.text.trim(),
-                        lastName: controller.lastName.text.trim(),
-                        dateOfBirth: controller.dateOfBirth.text.trim(),
-                        gender: controller.gender.value,
-                      );
-                      SignUpController.instance.createUser();
-                    }
-                  }
+                            final user = UserModel(
+                              email: controller.email.text.trim(),
+                              firstName: controller.firstName.text.trim(),
+                              lastName: controller.lastName.text.trim(),
+                              dateOfBirth: controller.dateOfBirth.text.trim(),
+                              gender: controller.gender.value,
+                            );
+                            SignUpController.instance.createUser();
+                          }
+                        }
                       : null,
                   child: controller.isLoading.value
                       ? const Row(

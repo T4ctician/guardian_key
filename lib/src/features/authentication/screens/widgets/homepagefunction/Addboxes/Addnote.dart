@@ -74,7 +74,7 @@ import 'package:guardian_key/src/services/note_service.dart';
             const SizedBox(
               height: 20,
             ),
-            noteContainer(context, NoteService()),
+            //noteContainer(context, NoteService()),
             Column(
               children: [
                 formHeading("Note Title"),
@@ -184,7 +184,7 @@ import 'package:guardian_key/src/services/note_service.dart';
                       child: TextFormField(
                         controller: controller,
                         maxLines: maxLines,  // Use maxLines here
-                        maxLength: hintText == "Enter Note Details" ? 3000 : null, // set maxLength for note details
+                        maxLength: hintText == "Enter Note Details" ? 1000 : null, // set maxLength for note details
                         buildCounter: hintText == "Enter Note Details"
                           ? (BuildContext context, { int? currentLength, int? maxLength, bool? isFocused }) => 
                               Text('$currentLength/$maxLength') 
@@ -254,6 +254,7 @@ import 'package:guardian_key/src/services/note_service.dart';
       );
     }
 
+/*
   Widget noteContainer(BuildContext context, NoteService noteService) {
       double screenHeight = MediaQuery.of(context).size.height;
       double screenWidth = MediaQuery.of(context).size.width;
@@ -388,7 +389,7 @@ import 'package:guardian_key/src/services/note_service.dart';
               ),
             );
           }
-
+*/
 
     Future<bool?> showConfirmationDialog(BuildContext context) {
       return showDialog<bool>(

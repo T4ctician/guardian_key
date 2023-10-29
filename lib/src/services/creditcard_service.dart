@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/features/authentication/models/creditcard_model.dart'; 
 import 'package:guardian_key/src/repository/creditcard_repository.dart';
 
@@ -5,7 +7,12 @@ class CreditCardService {
   final _creditCardRepo = CreditCardRepository.instance;
 
   Future<List<CreditCardModel>> fetchCreditCardData() async {
-    return await _creditCardRepo.getAllCreditCards();
+    return await _creditCardRepo.getAllCreditCards(masterPassword);
+  }
+
+  String get masterPassword {
+    final masterPasswordController = Get.find<MasterPasswordController>();
+    return masterPasswordController.masterPassword ?? '';  // if null, return an empty string
   }
   
   Future<List<String>> fetchCardholderNames() async {
@@ -51,6 +58,6 @@ class CreditCardService {
   }
 
   Stream<List<CreditCardModel>> listenToAllCreditCards() {
-    return _creditCardRepo.listenToAllCreditCards();
+    return _creditCardRepo.listenToAllCreditCards(masterPassword);
   }
 }
