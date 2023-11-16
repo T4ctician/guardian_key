@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,17 @@ class MasterPasswordController extends GetxController {
 
   final EncryptionService _encryptionService = EncryptionService();
   final UserRepository _userRepo = UserRepository.instance;
+
+  @override
+  void onClose() {
+    // Clear sensitive data
+    _masterPassword.value = '';
+
+    _removeOverlay();
+
+    super.onClose();
+  }
+
 
   Future<String?> promptForMasterPassword(BuildContext context) async {
     return await showDialog<String>(
@@ -183,25 +195,25 @@ class MasterPasswordController extends GetxController {
   }
 
   bool shouldPromptForMasterPassword() {
-    print("ensureMasterPasswordIsSet called");
+    // print("ensureMasterPasswordIsSet called");
 
     if (isMasterPasswordVerified.value || hasPromptedForMasterPassword) {
-      print("Master password already verified or has been prompted");
+      // print("Master password already verified or has been prompted");
       return false;
     }
     return true;
   }
 
   Future<void> handleInitialMasterPasswordSetup() async {
-    print("No stored master password hash found. Prompting user to set master password.");
+    // print("No stored master password hash found. Prompting user to set master password.");
     final masterPassword = await promptForMasterPassword(Get.context!);
     if (masterPassword != null && masterPassword.isNotEmpty) {
-      await saveHashedMasterPassword(masterPassword);
+      await saveHashedMasterPassword(masterPassword); // Save to database
     }
   }
 
   Future<void> verifyAgainstStoredHash(String storedMasterPasswordHash) async {
-    print("Stored master password hash found. Prompting user for verification.");
+    // print("Stored master password hash found. Prompting user for verification.");
     final masterPassword = await promptForMasterPasswordVerification(Get.context!);
     if (masterPassword == null || masterPassword.isEmpty) {
       return;
@@ -220,15 +232,17 @@ class MasterPasswordController extends GetxController {
     } else {
       // Correct master password
       handleCorrectMasterPassword();
+      
     }
   }
 
-  Future<void> handleIncorrectMasterPassword() async {
+    Future<void> handleIncorrectMasterPassword() async {
     Get.snackbar("Error", "Incorrect master password", duration: Duration(seconds: 3));
     _showOverlay(Get.overlayContext!);
     await Future.delayed(Duration(seconds: 3));
     _removeOverlay();
-    SystemNavigator.pop();
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    exit(0);
   }
 
   Future<void> handleCorrectMasterPassword() async {

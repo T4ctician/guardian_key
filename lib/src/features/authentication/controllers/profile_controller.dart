@@ -367,10 +367,12 @@ Future<void> deleteUser() async {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+        // Logic for when the app is paused or inactive
         _lastBackgroundedTime = DateTime.now();
         await _setLastBackgroundedTime(_lastBackgroundedTime!);
     } else if (state == AppLifecycleState.resumed && !_isFirstLaunch) {
+        // Resumed logic remains unchanged
         final currentTime = DateTime.now();
 
         // Fetch user's ID and pass it to isBiometricAuthEnabled
@@ -380,13 +382,14 @@ Future<void> deleteUser() async {
         if (isBiometricAuthEnabled &&
             _lastBackgroundedTime != null &&
             currentTime.difference(_lastBackgroundedTime!).inMinutes >= 5 &&
-            ( _lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 10) &&
+            (_lastAuthenticatedTime == null || currentTime.difference(_lastAuthenticatedTime!).inMinutes > 10) &&
             !_isAuthenticating) {
             _authenticateUser();
         }
     }
     _isFirstLaunch = false;
   }
+
 
   Future<void> _authenticateUser() async {
     _isAuthenticating = true;
@@ -399,5 +402,6 @@ Future<void> deleteUser() async {
     }
     _isAuthenticating = false;
   }
+
 
 }

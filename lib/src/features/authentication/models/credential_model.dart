@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:guardian_key/src/features/authentication/controllers/masterpassword_controller.dart';
 import 'package:guardian_key/src/services/encryption_service.dart';
 
 class CredentialModel {
@@ -47,7 +49,7 @@ class CredentialModel {
   factory CredentialModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document, String masterPassword) {
     final data = document.data()!;
     final encryptionService = EncryptionService();
-
+    
     String websiteName, userID, email, password;
 
     try {

@@ -45,14 +45,17 @@ dependencies:
   firebase_core: ^2.17.0
   firebase_auth: ^4.10.1
   cloud_firestore: ^4.9.3
-  shared_preferences: ^2.2.1
+  shared_preferences: ^2.2.2
   image_picker: ^1.0.4
   local_auth: ^2.1.7
   crypto: ^3.0.3
   encrypt: ^5.0.3
   pointycastle: ^3.7.3
+  flutter_secure_storage: ^9.0.0
+  
 
 flutter_native_splash:
+  android: true
   color: "#ffffff"
   image: assets/splash_screen/splash_screen_logo.png
   branding: assets/splash_screen/splash_screen_text.png
@@ -60,6 +63,15 @@ flutter_native_splash:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^5.4.2
+  integration_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo/ic_launcher/1024.png"
 
 
   # The "flutter_lints" package below contains a set of recommended lints to

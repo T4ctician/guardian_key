@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/features/authentication/screens/homepage.dart';
 import 'package:guardian_key/src/features/authentication/screens/welcome_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'exceptions/t_exceptions.dart';
 

@@ -13,6 +13,7 @@ class LoginRepository extends GetxController {
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
 
+
   // Check if the user is logged in
   String get checkUserId {
     final uid = userId;

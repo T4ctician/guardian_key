@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               initialValue: isAutoFillEnabled,
                               onChanged: (value) async {
                                   ProfileController.instance.setAutoFill(value);
-                                  // TODO: Handle other logic related to enabling or disabling auto-fill.
+                                  // Handle other logic related to enabling or disabling auto-fill.
                               },
                           );
                       } else {

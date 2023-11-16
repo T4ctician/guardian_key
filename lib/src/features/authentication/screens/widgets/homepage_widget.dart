@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:guardian_key/src/constants/CategoryContainer.dart';
 import 'package:guardian_key/src/constants/constants.dart';
@@ -92,7 +91,6 @@ void _showCreditCardModal() {
   void initState() {
     super.initState();
     
-    print("HomePageWidgetState initState called");
     SchedulerBinding.instance.addPostFrameCallback((_) {
     final masterPasswordController = Get.find<MasterPasswordController>();
     masterPasswordController.ensureMasterPasswordIsSet();
@@ -108,7 +106,7 @@ void _showCreditCardModal() {
       if (mounted) { // Check if the widget is still in the widget tree
           setState(() {
               _currentUser = user;
-              displayedPasswords = passwordData;  // Update the displayedPasswords list with the fetched data
+              displayedPasswords = passwordData;
           });
       }
   }
