@@ -20,16 +20,3 @@ Figma Design:
 ![image](https://github.com/user-attachments/assets/50195485-a77b-40dc-aadb-9a329b3332c5)
 ![image](https://github.com/user-attachments/assets/ad0e0170-5adf-4811-b4e3-bb863cb9c45a)
 
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
