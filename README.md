@@ -11,6 +11,12 @@ Password Strength Analysis: Alerts users to weak or reused passwords.
 Firebase Integration: Real-time data sync and cloud-based secure storage.
 Cross-platform: Developed with Flutter for seamless deployment on both iOS and Android.
 
+Figma Design:
+![image](https://github.com/user-attachments/assets/75efe52c-a40a-474c-8e55-43bf96686406)
+![image](https://github.com/user-attachments/assets/50195485-a77b-40dc-aadb-9a329b3332c5)
+![image](https://github.com/user-attachments/assets/ad0e0170-5adf-4811-b4e3-bb863cb9c45a)
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
