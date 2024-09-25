@@ -6,9 +6,13 @@ A mobile application built with Flutter for cross-platform development (iOS and 
 
 Key Features:
 User Profiles: Secure account creation and management.
+
 Password Storage & Generation: Strong encryption (AES-256) and a built-in password generator.
+
 Password Strength Analysis: Alerts users to weak or reused passwords.
+
 Firebase Integration: Real-time data sync and cloud-based secure storage.
+
 Cross-platform: Developed with Flutter for seamless deployment on both iOS and Android.
 
 Figma Design:
